@@ -55,16 +55,18 @@ public static class BotUtilities {
       return FindPathToNearestFood_AStar(gameState, mySnake, ignoreFood);
    }
 
-   public static List<Vector2Int> FindPathToTargetLocation_AStar(GameState gameState, SnakeData mySnake, Vector2Int targetLocation) {
-      return FindPathToNearestTargetLocation_AStar(gameState, mySnake, new Vector2Int[] { targetLocation });
+   public static List<Vector2Int> FindPathToTargetLocation_AStar(GameState gameState, SnakeData mySnake, Vector2Int targetLocation, IEnumerable<Vector2Int> ignore = null) {
+      return FindPathToNearestTargetLocation_AStar(gameState, mySnake, new Vector2Int[] { targetLocation }, ignore);
    }
 
-   public static List<Vector2Int> FindPathToNearestTargetLocation_AStar(GameState gameState, SnakeData mySnake, IEnumerable<Vector2Int> targetLocations) {
+   public static List<Vector2Int> FindPathToNearestTargetLocation_AStar(GameState gameState, SnakeData mySnake, IEnumerable<Vector2Int> targetLocations, IEnumerable<Vector2Int> ignore = null) {
+      if (ignore == null)
+         ignore = new Vector2Int[] { };
       List<Vector2Int> open = new List<Vector2Int>();
       List<Vector2Int> closed = new List<Vector2Int>();
       Dictionary<Vector2Int, Vector2Int> parents = new Dictionary<Vector2Int, Vector2Int>();
       open.Add(mySnake.Head);
-      
+
       while (open.Count > 0) {
          int lowestDistance = int.MaxValue;
          Vector2Int bestNode = Vector2Int.zero;
@@ -102,20 +104,26 @@ public static class BotUtilities {
                return finalPath;
             }
             if (gameState.IsTileSafe(next) && !closed.Contains(next)) {
-               if (!parents.ContainsKey(next)) {
-                  parents.Add(next, bestNode);
+               if (ignore.Contains(next)) {
+                  Debug.Log("illegal");
                }
                else {
-                  parents[next] = bestNode;
+                  if (!parents.ContainsKey(next)) {
+                     parents.Add(next, bestNode);
+                  }
+                  else {
+                     parents[next] = bestNode;
+                  }
+                  if (!open.Contains(next))
+                     open.Add(next);
                }
-               if (!open.Contains(next))
-                  open.Add(next);
             }
          }
       }
 
       return new List<Vector2Int>();
    }
+
 
    /// <summary>
    /// Berechnet die Entfernung einer Koordinate zu einer anderen Koordinate unter der Verwendung der

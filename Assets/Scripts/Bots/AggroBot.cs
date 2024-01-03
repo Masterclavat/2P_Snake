@@ -8,55 +8,107 @@ using UnityEngine;
 public class AggroBot : SnakeBot {
    private int defensiveSegments = 6;
    List<Vector2Int> lastPath;
-
+   Vector2Int targetFood;
    public override SnakeDirection Tick(GameState gameState, SnakeData mySnake, SnakeData otherSnake) {
       if (mySnake.Segments.Count < defensiveSegments) {
          return PlayDefensively(gameState, mySnake, otherSnake);
       }
       else {
          List<Vector2Int> path = null;
-         int distanceToEnemy = BotUtilities.CalculateDistance(mySnake.Head, otherSnake.Head);
-         if ( distanceToEnemy <5) {
-            Vector2Int nearestEnemyFood = gameState.FindNearestFood(otherSnake);
-            //if (BotUtilities.IsLocationNearABorder(gameState, nearestEnemyFood, 4))
-            path = BotUtilities.FindPathToTargetFood_AStar(gameState, mySnake, nearestEnemyFood);
-            if (path.Count == 1 && path[0] == nearestEnemyFood) {
-               int numUnsafeTilesNextToFood = 0;
-               Vector2Int[] adjLocations = BotUtilities.GetAdjacentLocations(path[0]);
-               List<Vector2Int> safeAdjLocations = new List<Vector2Int>();
-               foreach (Vector2Int loc in adjLocations) {
-                  if (!gameState.IsTileSafe(loc)) {
-                     numUnsafeTilesNextToFood++;
-                  }
-                  else {
-                     safeAdjLocations.Add(loc);
+         Vector2Int tmpFood = new Vector2Int(-1, -1);
+         foreach (Vector2Int food in gameState.FoodLocations) {
+            if (food == targetFood)
+               break;
+            if (BotUtilities.IsLocationNearABorder(gameState, food)) {
+               tmpFood = food;
+               break;
+            }
+         }
+         if (tmpFood == new Vector2Int(-1, -1)) {
+
+         }
+         else {
+            targetFood = tmpFood;
+
+            if (targetFood.x == 0) {
+               for (int i = -mySnake.Segments.Count / 2; i < mySnake.Segments.Count / 2; i++) {
+                  Vector2Int pos = new Vector2Int(1, targetFood.y + i);
+                  if (gameState.IsTileSafe(pos)) {
+                     path = BotUtilities.FindPathToTargetLocation_AStar(gameState, mySnake, pos, new Vector2Int[] { targetFood });
+                     break;
                   }
                }
-               if (numUnsafeTilesNextToFood < 3) {
-                  path = BotUtilities.FindPathToTargetLocation_AStar(gameState, mySnake, safeAdjLocations[0]);
+            }
+            else if (targetFood.x == gameState.GridSize.x - 1) {
+               for (int i = -mySnake.Segments.Count / 2; i < mySnake.Segments.Count / 2; i++) {
+                  Vector2Int pos = new Vector2Int(targetFood.x - 1, targetFood.y + i);
+                  if (gameState.IsTileSafe(pos)) {
+                     path = BotUtilities.FindPathToTargetLocation_AStar(gameState, mySnake, pos, new Vector2Int[] { targetFood });
+                     break;
+                  }
                }
-               else {
-                  Vector2Int nearestFood = gameState.FindNearestFood(mySnake);
-                  path = BotUtilities.FindPathToNearestFood_AStar(gameState, mySnake, new Vector2Int[] { nearestFood });
+            }
+            else if (targetFood.y == 0) {
+               for (int i = -mySnake.Segments.Count / 2; i < mySnake.Segments.Count / 2; i++) {
+                  Vector2Int pos = new Vector2Int(targetFood.x + i, 1);
+                  if (gameState.IsTileSafe(pos)) {
+                     path = BotUtilities.FindPathToTargetLocation_AStar(gameState, mySnake, pos, new Vector2Int[] { targetFood });
+                     break;
+                  }
+               }
+            }
+            else if (targetFood.y == gameState.GridSize.y - 1) {
+               for (int i = -mySnake.Segments.Count / 2; i < mySnake.Segments.Count / 2; i++) {
+                  Vector2Int pos = new Vector2Int(targetFood.x + i, targetFood.y - 1);
+                  if (gameState.IsTileSafe(pos)) {
+                     path = BotUtilities.FindPathToTargetLocation_AStar(gameState, mySnake, pos, new Vector2Int[] { targetFood });
+                     break;
+                  }
                }
             }
          }
-         else {
-            //if (BotUtilities.IsSnakeNearABorder(gameState, otherSnake, 2)) {
-            //   Vector2Int otherSnakePosInTwoTicks = otherSnake.Head + BotUtilities.DirectionChange[otherSnake.Direction] * 2;
-            //   if (gameState.IsTileSafe(otherSnakePosInTwoTicks)) {
-            //      path = BotUtilities.FindPathToTargetLocation_AStar(gameState, mySnake, otherSnakePosInTwoTicks);
-            //   }
-            //   else {
-            //      foreach (Vector2Int dirChange in BotUtilities.DirectionChange.Values) {
-            //         if (gameState.IsTileSafe(otherSnake.NextHeadPosition + dirChange)) {
-            //            path = BotUtilities.FindPathToTargetLocation_AStar(gameState, mySnake, otherSnake.NextHeadPosition + dirChange);
-            //            break;
-            //         }
-            //      }
-            //   }
-            //}
-         }
+         //int distanceToEnemy = BotUtilities.CalculateDistance(mySnake.Head, otherSnake.Head);
+         //if ( distanceToEnemy <5) {
+         //   Vector2Int nearestEnemyFood = gameState.FindNearestFood(otherSnake);
+         //   //if (BotUtilities.IsLocationNearABorder(gameState, nearestEnemyFood, 4))
+         //   path = BotUtilities.FindPathToTargetFood_AStar(gameState, mySnake, nearestEnemyFood);
+         //   if (path.Count == 1 && path[0] == nearestEnemyFood) {
+         //      int numUnsafeTilesNextToFood = 0;
+         //      Vector2Int[] adjLocations = BotUtilities.GetAdjacentLocations(path[0]);
+         //      List<Vector2Int> safeAdjLocations = new List<Vector2Int>();
+         //      foreach (Vector2Int loc in adjLocations) {
+         //         if (!gameState.IsTileSafe(loc)) {
+         //            numUnsafeTilesNextToFood++;
+         //         }
+         //         else {
+         //            safeAdjLocations.Add(loc);
+         //         }
+         //      }
+         //      if (numUnsafeTilesNextToFood < 3) {
+         //         path = BotUtilities.FindPathToTargetLocation_AStar(gameState, mySnake, safeAdjLocations[0]);
+         //      }
+         //      else {
+         //         Vector2Int nearestFood = gameState.FindNearestFood(mySnake);
+         //         path = BotUtilities.FindPathToNearestFood_AStar(gameState, mySnake, new Vector2Int[] { nearestFood });
+         //      }
+         //   }
+         //}
+         //else {
+         //   //if (BotUtilities.IsSnakeNearABorder(gameState, otherSnake, 2)) {
+         //   //   Vector2Int otherSnakePosInTwoTicks = otherSnake.Head + BotUtilities.DirectionChange[otherSnake.Direction] * 2;
+         //   //   if (gameState.IsTileSafe(otherSnakePosInTwoTicks)) {
+         //   //      path = BotUtilities.FindPathToTargetLocation_AStar(gameState, mySnake, otherSnakePosInTwoTicks);
+         //   //   }
+         //   //   else {
+         //   //      foreach (Vector2Int dirChange in BotUtilities.DirectionChange.Values) {
+         //   //         if (gameState.IsTileSafe(otherSnake.NextHeadPosition + dirChange)) {
+         //   //            path = BotUtilities.FindPathToTargetLocation_AStar(gameState, mySnake, otherSnake.NextHeadPosition + dirChange);
+         //   //            break;
+         //   //         }
+         //   //      }
+         //   //   }
+         //   //}
+
          if (path == null) {
             //Vector2Int nearestFood = gameState.FindNearestFood(mySnake);
             //path = BotUtilities.FindPathToTargetFood_AStar(gameState, mySnake, nearestEnemyFood);
