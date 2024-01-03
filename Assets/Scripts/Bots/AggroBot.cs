@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 
 public class AggroBot : SnakeBot {
-   private int defensiveSegments = 6;
+   private int defensiveSegments = 10;
    List<Vector2Int> lastPath;
 
    public override SnakeDirection Tick(GameState gameState, SnakeData mySnake, SnakeData otherSnake) {
@@ -16,23 +16,32 @@ public class AggroBot : SnakeBot {
       else {
          List<Vector2Int> path = null;
          int distanceToEnemy = BotUtilities.CalculateDistance(mySnake.Head, otherSnake.Head);
-         if (distanceToEnemy > 4) {
+         if (distanceToEnemy > 3) {
             Vector2Int nearestEnemyFood = gameState.FindNearestFood(otherSnake);
-            path = BotUtilities.FindPathToTargetFood_AStar(gameState, mySnake, nearestEnemyFood);
+            if(BotUtilities.IsLocationNearABorder(gameState, nearestEnemyFood, 2))
+               path = BotUtilities.FindPathToTargetFood_AStar(gameState, mySnake, nearestEnemyFood);
          }
          else {
-            if (BotUtilities.IsSnakeNearABorder(gameState, otherSnake)) {
+            if (BotUtilities.IsSnakeNearABorder(gameState, otherSnake, 2)) {
                Vector2Int otherSnakePosInTwoTicks = otherSnake.Head + BotUtilities.DirectionChange[otherSnake.Direction] * 2;
                if (gameState.IsTileSafe(otherSnakePosInTwoTicks)) {
                   path = BotUtilities.FindPathToTargetLocation_AStar(gameState, mySnake, otherSnakePosInTwoTicks);
                }
-            }
-            if (path == null) {
-               Vector2Int nearestEnemyFood = gameState.FindNearestFood(otherSnake);
-               path = BotUtilities.FindPathToTargetFood_AStar(gameState, mySnake, nearestEnemyFood);
-            }
+               else {
+                  foreach(Vector2Int dirChange in BotUtilities.DirectionChange.Values) {
+                     if(gameState.IsTileSafe(otherSnake.NextHeadPosition + dirChange)) {
+                        path = BotUtilities.FindPathToTargetLocation_AStar(gameState, mySnake, otherSnake.NextHeadPosition + dirChange);
+                        break;
+                     }
+                  }
+               }
+            }            
          }
-
+         if (path == null) {
+            //Vector2Int nearestEnemyFood = gameState.FindNearestFood(otherSnake);
+            //path = BotUtilities.FindPathToTargetFood_AStar(gameState, mySnake, nearestEnemyFood);
+            path = BotUtilities.FindPathToNearestFood_AStar(gameState, mySnake);
+         }
          //Speichere den Pfad, um ihn anzeigen lassen zu können
          mySnake.DebugData = path.ToArray();
          if (path.Count > 0) {
@@ -40,12 +49,20 @@ public class AggroBot : SnakeBot {
             //folge nicht dem Pfad und weiche auf ein sicheres Feld aus
             //Dies verhindert in den meisten Fällen, dass die Runde unentschieden endet
             if (BotUtilities.CalculateDistance(otherSnake.Head, path[0]) == 1) {
+               int highestDistance = -1;
+               SnakeDirection bestDir = mySnake.Direction;
                foreach (var dir in BotUtilities.DirectionChange.Keys) {
                   Vector2Int next = BotUtilities.DirectionChange[dir] + mySnake.Head;
                   if (next != path[0] && gameState.IsTileSafe(next)) {
-                     return dir;
+                     int d = BotUtilities.CalculateDistance(otherSnake.Head, next);
+                     if (highestDistance < d) {
+                        highestDistance = d;
+                        bestDir = dir;
+                     }
                   }
                }
+
+               return bestDir;
             }
 
             //Ansonsten, folge dem Pfad

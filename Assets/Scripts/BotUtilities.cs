@@ -131,7 +131,11 @@ public static class BotUtilities {
    }
 
    public static bool IsSnakeNearABorder(GameState gameState, SnakeData targetSnake, int maxDistance = 1) {
-      return targetSnake.Head.x <= maxDistance || targetSnake.Head.x >= gameState.GridSize.x - maxDistance - 1 ||
-             targetSnake.Head.y <= maxDistance || targetSnake.Head.y >= gameState.GridSize.y - maxDistance - 1;
+      return IsLocationNearABorder(gameState, targetSnake.Head, maxDistance);
+   }
+
+   public static bool IsLocationNearABorder(GameState gameState, Vector2Int location, int maxDistance = 1) {
+      return location.x <= maxDistance || location.x >= gameState.GridSize.x - maxDistance - 1 ||
+             location.y <= maxDistance || location.y >= gameState.GridSize.y - maxDistance - 1;
    }
 }
