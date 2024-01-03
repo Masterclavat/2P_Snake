@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 
 public class AggroBot : SnakeBot {
-   private int defensiveSegments = 7;
+   private int defensiveSegments = 6;
    List<Vector2Int> lastPath;
 
    public override SnakeDirection Tick(GameState gameState, SnakeData mySnake, SnakeData otherSnake) {
@@ -16,7 +16,7 @@ public class AggroBot : SnakeBot {
       else {
          List<Vector2Int> path = null;
          int distanceToEnemy = BotUtilities.CalculateDistance(mySnake.Head, otherSnake.Head);
-         if ( distanceToEnemy >1) {
+         if ( distanceToEnemy <5) {
             Vector2Int nearestEnemyFood = gameState.FindNearestFood(otherSnake);
             //if (BotUtilities.IsLocationNearABorder(gameState, nearestEnemyFood, 4))
             path = BotUtilities.FindPathToTargetFood_AStar(gameState, mySnake, nearestEnemyFood);
@@ -62,6 +62,7 @@ public class AggroBot : SnakeBot {
             //path = BotUtilities.FindPathToTargetFood_AStar(gameState, mySnake, nearestEnemyFood);
             path = BotUtilities.FindPathToNearestFood_AStar(gameState, mySnake);
          }
+
          //Speichere den Pfad, um ihn anzeigen lassen zu können
          mySnake.DebugData = path.ToArray();
          if (path.Count > 0) {

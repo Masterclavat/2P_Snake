@@ -96,10 +96,7 @@ public class GameDisplay : MonoBehaviour {
             GridTiles[segment.x * currentMem.GridSize.y + segment.y].GetComponentInChildren<TextMeshProUGUI>().text = "X";
          }
          if (segment == currentMem.Snake_1.Head) {
-            float h;
-            float s;
-            float v;
-            Color.RGBToHSV(Snake1Color, out h, out s, out v);
+            Color.RGBToHSV(Snake1Color, out float h, out float s, out float v);
             Color headColor = Color.HSVToRGB(h, s * 0.3f, v);
             GridTiles[segment.x * currentMem.GridSize.y + segment.y].GetComponent<Image>().color = headColor;
          }
@@ -113,10 +110,7 @@ public class GameDisplay : MonoBehaviour {
             GridTiles[segment.x * currentMem.GridSize.y + segment.y].GetComponentInChildren<TextMeshProUGUI>().text = "X";
          }
          if (segment == currentMem.Snake_2.Head) {
-            float h;
-            float s;
-            float v;
-            Color.RGBToHSV(Snake2Color, out h, out s, out v);
+            Color.RGBToHSV(Snake2Color, out float h, out float s, out float v);
             Color headColor = Color.HSVToRGB(h, s * 0.3f, v);
             GridTiles[segment.x * currentMem.GridSize.y + segment.y].GetComponent<Image>().color = headColor;
          }
