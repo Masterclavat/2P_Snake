@@ -138,4 +138,13 @@ public static class BotUtilities {
       return location.x <= maxDistance || location.x >= gameState.GridSize.x - maxDistance - 1 ||
              location.y <= maxDistance || location.y >= gameState.GridSize.y - maxDistance - 1;
    }
+
+   public static Vector2Int[] GetAdjacentLocations(Vector2Int targetLocation) {
+      List<Vector2Int> adjLocations = new List<Vector2Int>();
+      foreach (Vector2Int loc in DirectionChange.Values) {
+         adjLocations.Add(loc + targetLocation);
+      }
+
+      return adjLocations.ToArray();
+   }
 }

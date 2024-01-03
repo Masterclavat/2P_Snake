@@ -31,7 +31,7 @@ public class GameLogic {
    private int maxFood = 3;
    private Vector2Int gameGridSize;
    private bool storeMemory;
-   private int maxTicks = 5000;
+   private int maxTicks = 1000;
    System.Random rand;
 
    public GameLogic(Vector2Int gridSize, SnakeBot bot1, SnakeBot bot2, int randomSeed, bool withMemory = true) {
