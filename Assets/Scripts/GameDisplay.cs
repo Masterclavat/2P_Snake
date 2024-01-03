@@ -78,8 +78,10 @@ public class GameDisplay : MonoBehaviour {
          return;
       if (!advanceSingleTick && (Time.time - lastTick < GameTickRate || paused))
          return;
-      if (currentMemoryIndex >= Game.Memory.Count)
+      if (currentMemoryIndex >= Game.Memory.Count) {
          currentMemoryIndex = Game.Memory.Count - 1;
+         paused = true;
+      }
       else if (currentMemoryIndex < 0)
          currentMemoryIndex = 0;
       advanceSingleTick = false;
@@ -207,6 +209,7 @@ public class GameDisplay : MonoBehaviour {
       Game = Simulator.Games.ToArray()[++currentGameIndex];
       lastTick = 0f;
       currentMemoryIndex = 0;
+      paused = false;
    }
 
    private void ShowNextGame_WinnerSnake_1() {
@@ -217,6 +220,7 @@ public class GameDisplay : MonoBehaviour {
             currentGameIndex = i;
             currentMemoryIndex = 0;
             lastTick = 0f;
+            paused = false;
             return;
          }
       }
@@ -230,6 +234,7 @@ public class GameDisplay : MonoBehaviour {
             currentGameIndex = i;
             currentMemoryIndex = 0;
             lastTick = 0f;
+            paused = false;
             return;
          }
       }
@@ -243,6 +248,7 @@ public class GameDisplay : MonoBehaviour {
             currentGameIndex = i;
             currentMemoryIndex = 0;
             lastTick = 0f;
+            paused = false;
             return;
          }
       }
@@ -256,6 +262,7 @@ public class GameDisplay : MonoBehaviour {
             currentGameIndex = i;
             currentMemoryIndex = 0;
             lastTick = 0f;
+            paused = false;
             return;
          }
       }
@@ -267,6 +274,7 @@ public class GameDisplay : MonoBehaviour {
          Game = games[currentGameIndex];
          lastTick = 0f;
          currentMemoryIndex = 0;
+         paused = false;
       }
    }
 }

@@ -16,7 +16,7 @@ public class AggroBot : SnakeBot {
       else {
          List<Vector2Int> path = null;
          int distanceToEnemy = BotUtilities.CalculateDistance(mySnake.Head, otherSnake.Head);
-         if (distanceToEnemy < mySnake.Segments.Count && distanceToEnemy >1) {
+         if ( distanceToEnemy >1) {
             Vector2Int nearestEnemyFood = gameState.FindNearestFood(otherSnake);
             //if (BotUtilities.IsLocationNearABorder(gameState, nearestEnemyFood, 4))
             path = BotUtilities.FindPathToTargetFood_AStar(gameState, mySnake, nearestEnemyFood);
