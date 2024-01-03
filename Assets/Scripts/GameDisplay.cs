@@ -60,8 +60,6 @@ public class GameDisplay : MonoBehaviour {
       }
       if (Game == null)
          return;
-      //if (!Game.CurrentGameState.IsGameInProgress)
-      //   return;
       if (Time.time - lastTick < GameTickRate)
          return;
       if (currentMemoryIndex >= Game.Memory.Count)
@@ -137,7 +135,6 @@ public class GameDisplay : MonoBehaviour {
       int snake2Win = 0;
       int draw = 0;
       int tickLimit = 0;
-      //GameLogic[] games = Simulator.Games.ToArray();
       foreach (GameLogic game in Simulator.Games) {
          if (game.CurrentGameState.IsGameInProgress)
             continue;
@@ -153,17 +150,7 @@ public class GameDisplay : MonoBehaviour {
       }
       float simTime = Simulator.SimulationEnded - Simulator.SimulationStarted;
       if (simTime < 0f)
-         simTime = Time.time - Simulator.SimulationStarted;
-      statusSB.AppendLine("<b>Simulation Stats</b>");
-      statusSB.AppendFormat("Simulating {0} Games\n", Simulator.GamesToSimulate);
-      statusSB.AppendFormat("Games Running: {0}\n", Simulator.Games.Count - gamesFinished);
-      statusSB.AppendFormat("Games Finished: {0}/{1} ({2}%)\n", gamesFinished, Simulator.GamesToSimulate, ((float)gamesFinished / Simulator.GamesToSimulate * 100).ToString("N2"));
-      statusSB.AppendFormat("Snake1 Won: {0} ({1}%)\n", snake1Win, (snake1Win / (float)gamesFinished * 100).ToString("N2"));
-      statusSB.AppendFormat("Snake2 Won: {0} ({1}%)\n", snake2Win, (snake2Win / (float)gamesFinished * 100).ToString("N2"));
-      statusSB.AppendFormat("Draws: {0} ({1}%)\n", draw, (draw / (float)gamesFinished * 100).ToString("N2"));
-      statusSB.AppendFormat("Ended in Tick Limit: {0} ({1}%)\n", tickLimit, (tickLimit / (float)gamesFinished * 100).ToString("N2"));
-      statusSB.AppendFormat("Simulation Time: {0}s\n", (simTime).ToString("N2"));
-      statusSB.AppendLine();
+         simTime = Time.time - Simulator.SimulationStarted; 
       statusSB.AppendLine("<b>Input Guide</b>");
       statusSB.AppendLine("Press F1 for next game");
       statusSB.AppendLine("Press F2 for next game where Snake_1 won");
@@ -173,7 +160,20 @@ public class GameDisplay : MonoBehaviour {
       statusSB.AppendLine("Press F6 to replay the current game");
       statusSB.AppendFormat("Press F11 to simulate {0} games\n", Simulator.GamesToSimulate);
       statusSB.AppendLine();
-      if (currentGameIndex > 0 && Game != null) {
+      if (Simulator.Games.Count > 0) {
+         statusSB.AppendLine("<b>Simulation Stats</b>");
+         statusSB.AppendFormat("Simulating {0} Games\n", Simulator.GamesToSimulate);
+         statusSB.AppendFormat("Games Running: {0}\n", Simulator.Games.Count - gamesFinished);
+         statusSB.AppendFormat("Games Finished: {0}/{1} ({2}%)\n", gamesFinished, Simulator.GamesToSimulate, ((float)gamesFinished / Simulator.GamesToSimulate * 100).ToString("N2"));
+         statusSB.AppendFormat("Snake1 Won: {0} ({1}%)\n", snake1Win, (snake1Win / (float)gamesFinished * 100).ToString("N2"));
+         statusSB.AppendFormat("Snake2 Won: {0} ({1}%)\n", snake2Win, (snake2Win / (float)gamesFinished * 100).ToString("N2"));
+         statusSB.AppendFormat("Draws: {0} ({1}%)\n", draw, (draw / (float)gamesFinished * 100).ToString("N2"));
+         statusSB.AppendFormat("Ended in Tick Limit: {0} ({1}%)\n", tickLimit, (tickLimit / (float)gamesFinished * 100).ToString("N2"));
+         statusSB.AppendFormat("Simulation Time: {0}s\n", (simTime).ToString("N2"));
+         statusSB.AppendLine();
+      }
+      
+      if (currentGameIndex >= 0 && Game != null) {
          statusSB.AppendLine("<b>Game Stats</b>");
          statusSB.AppendFormat("Current Game: {0}\n", currentGameIndex);
          statusSB.AppendFormat("Winner: {0}\n", Game.WinnerName);

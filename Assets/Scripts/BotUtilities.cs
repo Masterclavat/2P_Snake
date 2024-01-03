@@ -29,22 +29,50 @@ public static class BotUtilities {
    /// Wenn dieser Parameter null ist, werden alle Futterkoordinaten in betracht gezogen.</param>
    /// <returns>Gibt eine Liste von Koordinaten zurück, die den Weg beschreiben. Startet vom Kopf der Schlange
    /// und führt bis zum nächsten Futter.</returns>
-   public static List<Vector2Int> FindPathToNearestFood_AStar(GameState gameState, SnakeData mySnake, Vector2Int? ignoreFood = null) {
+   public static List<Vector2Int> FindPathToNearestFood_AStar(GameState gameState, SnakeData mySnake, IEnumerable<Vector2Int> ignoreFood = null) {
+      List<Vector2Int> validFoodTargets = new List<Vector2Int>();
+      if (ignoreFood != null) {
+         foreach (Vector2Int foodPos in gameState.FoodLocations) {
+            if (ignoreFood.Contains(foodPos))
+               continue;
+            validFoodTargets.Add(foodPos);
+         }
+      }
+      else {
+         validFoodTargets.AddRange(gameState.FoodLocations);
+      }
+
+      return FindPathToNearestTargetLocation_AStar(gameState, mySnake, validFoodTargets);
+   }
+
+   public static List<Vector2Int> FindPathToTargetFood_AStar(GameState gameState, SnakeData mySnake, Vector2Int targetFood) {
+      List<Vector2Int> ignoreFood = new List<Vector2Int>();
+      foreach (Vector2Int foodLoc in gameState.FoodLocations) {
+         if (foodLoc != targetFood)
+            ignoreFood.Add(foodLoc);
+      }
+
+      return FindPathToNearestFood_AStar(gameState, mySnake, ignoreFood);
+   }
+
+   public static List<Vector2Int> FindPathToTargetLocation_AStar(GameState gameState, SnakeData mySnake, Vector2Int targetLocation) {
+      return FindPathToNearestTargetLocation_AStar(gameState, mySnake, new Vector2Int[] { targetLocation });
+   }
+
+   public static List<Vector2Int> FindPathToNearestTargetLocation_AStar(GameState gameState, SnakeData mySnake, IEnumerable<Vector2Int> targetLocations) {
       List<Vector2Int> open = new List<Vector2Int>();
       List<Vector2Int> closed = new List<Vector2Int>();
       Dictionary<Vector2Int, Vector2Int> parents = new Dictionary<Vector2Int, Vector2Int>();
       open.Add(mySnake.Head);
-
+      
       while (open.Count > 0) {
          int lowestDistance = int.MaxValue;
          Vector2Int bestNode = Vector2Int.zero;
          foreach (Vector2Int node in open) {
-            //Berechne näherungsweise die Entfernung zu allen Futterpositionen
-            foreach (Vector2Int foodPos in gameState.FoodLocations) {
-               if (ignoreFood.HasValue && foodPos == ignoreFood.Value)
-                  continue;
-               
-               int dist = CalculateDistance(node, foodPos);
+            //Berechne näherungsweise die Entfernung zu allen Zielpositionen
+            foreach (Vector2Int locs in targetLocations) {
+
+               int dist = CalculateDistance(node, locs);
                if (dist < lowestDistance) {
                   lowestDistance = dist;
                   bestNode = node;
@@ -56,7 +84,7 @@ public static class BotUtilities {
 
          foreach (Vector2Int dirChange in DirectionChange.Values) {
             Vector2Int next = bestNode + dirChange;
-            if (gameState.FoodLocations.Contains(next) && !(ignoreFood.HasValue && ignoreFood.Value == next)) {
+            if (targetLocations.Contains(next)) {
                //Rekonstruiere den Pfad
                if (!parents.ContainsKey(next)) {
                   parents.Add(next, bestNode);
@@ -73,7 +101,7 @@ public static class BotUtilities {
 
                return finalPath;
             }
-            if (gameState.IsTileSafe(next) && (!ignoreFood.HasValue || ignoreFood.Value != next) && !closed.Contains(next)) {               
+            if (gameState.IsTileSafe(next) && !closed.Contains(next)) {
                if (!parents.ContainsKey(next)) {
                   parents.Add(next, bestNode);
                }
@@ -100,5 +128,10 @@ public static class BotUtilities {
    /// <returns>Die Entfernung zwischen der Koordinaten from und to</returns>
    public static int CalculateDistance(Vector2Int from, Vector2Int to) {
       return Math.Abs(from.x - to.x) + Math.Abs(from.y - to.y);
+   }
+
+   public static bool IsSnakeNearABorder(GameState gameState, SnakeData targetSnake, int maxDistance = 1) {
+      return targetSnake.Head.x <= maxDistance || targetSnake.Head.x >= gameState.GridSize.x - maxDistance - 1 ||
+             targetSnake.Head.y <= maxDistance || targetSnake.Head.y >= gameState.GridSize.y - maxDistance - 1;
    }
 }
