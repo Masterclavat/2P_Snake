@@ -23,6 +23,8 @@ public class GameDisplay : MonoBehaviour {
    private int currentMemoryIndex = 0;
    private int currentGameIndex = -1;
    private float lastTick = 0f;
+   private bool paused = false;
+   bool advanceSingleTick = false;
    private StringBuilder statusSB = new StringBuilder();
 
    void Start() {
@@ -58,13 +60,29 @@ public class GameDisplay : MonoBehaviour {
       else if (Input.GetKeyDown(KeyCode.F6)) {
          ReplayCurrentGame();
       }
+      else if (Input.GetKeyDown(KeyCode.Space)) {
+         paused = !paused;
+      }
+      else if (Input.GetKeyDown(KeyCode.D)) {
+         if (Game != null && currentMemoryIndex < Game.Memory.Count) {
+            advanceSingleTick = true;
+         }
+      }
+      else if (Input.GetKeyDown(KeyCode.A)) {
+         if (Game != null && currentMemoryIndex > 0) {
+            currentMemoryIndex-=2;
+            advanceSingleTick = true;
+         }
+      }
       if (Game == null)
          return;
-      if (Time.time - lastTick < GameTickRate)
+      if (!advanceSingleTick && (Time.time - lastTick < GameTickRate || paused))
          return;
       if (currentMemoryIndex >= Game.Memory.Count)
-         return;
-
+         currentMemoryIndex = Game.Memory.Count - 1;
+      else if (currentMemoryIndex < 0)
+         currentMemoryIndex = 0;
+      advanceSingleTick = false;
       GameState currentMem = Game.Memory[currentMemoryIndex];
       foreach (GameObject tile in GridTiles) {
          tile.GetComponent<Image>().color = NeutralColor;
@@ -150,7 +168,7 @@ public class GameDisplay : MonoBehaviour {
       }
       float simTime = Simulator.SimulationEnded - Simulator.SimulationStarted;
       if (simTime < 0f)
-         simTime = Time.time - Simulator.SimulationStarted; 
+         simTime = Time.time - Simulator.SimulationStarted;
       statusSB.AppendLine("<b>Input Guide</b>");
       statusSB.AppendLine("Press F1 for next game");
       statusSB.AppendLine("Press F2 for next game where Snake_1 won");
@@ -172,12 +190,13 @@ public class GameDisplay : MonoBehaviour {
          statusSB.AppendFormat("Simulation Time: {0}s\n", (simTime).ToString("N2"));
          statusSB.AppendLine();
       }
-      
+
       if (currentGameIndex >= 0 && Game != null) {
          statusSB.AppendLine("<b>Game Stats</b>");
          statusSB.AppendFormat("Current Game: {0}\n", currentGameIndex);
          statusSB.AppendFormat("Winner: {0}\n", Game.WinnerName);
-         statusSB.AppendFormat("Game Length: {0} ticks", Game.Ticks);
+         statusSB.AppendFormat("Game Length: {0} ticks\n", Game.Ticks);
+         statusSB.AppendFormat("Game Random Seed: {0}\n", Game.RandomSeed);
       }
 
       StatusTextMesh.text = statusSB.ToString();
