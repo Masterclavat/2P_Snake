@@ -6,16 +6,14 @@ using UnityEngine;
 public class SnakeData : ICloneable {
    public Color Color;
    public List<Vector2Int> Segments = new List<Vector2Int>();
-   public SnakeDirection Direction;
-   public SnakeBot Owner;
-   public bool IsAlive;
+   public SnakeDirection Direction { get; set; }
+   public SnakeBot Owner { get; }
+   public bool IsAlive { get; set; }
    public object DebugData;
 
-   private Dictionary<SnakeDirection, Vector2Int> directionChange = new Dictionary<SnakeDirection, Vector2Int>(){
-      {SnakeDirection.Down, new Vector2Int(0,-1)},
-      {SnakeDirection.Left, new Vector2Int(-1,0)},
-      {SnakeDirection.Up, new Vector2Int(0, 1)},
-      {SnakeDirection.Right, new Vector2Int(1,0)}};
+   /// <summary>
+   /// Die Position des Kopfes der Schlange
+   /// </summary>
    public Vector2Int Head
    {
       get
@@ -24,6 +22,10 @@ public class SnakeData : ICloneable {
       }
    }
 
+   /// <summary>
+   /// Die Position an der der Kopf der Schlange nach dem nächsten Tick sein wird.
+   /// Verwendet dazu die derzeitige Richtung in Direction
+   /// </summary>
    public Vector2Int NextHeadPosition
    {
       get
@@ -31,16 +33,27 @@ public class SnakeData : ICloneable {
          if (Segments.Count == 0)
             return Vector2Int.zero;
 
-         return Head + directionChange[Direction];
+         return Head + BotUtilities.DirectionChange[Direction];
       }
    }
 
+   /// <summary>
+   /// Der Konstruktor der Klasse
+   /// </summary>
+   /// <param name="owner">Der Bot, der die Schlange kontrolliert</param>
+   /// <param name="color">Die gewünschte Farbe</param>
    public SnakeData(SnakeBot owner, Color color) {
       Owner = owner;
       Color = color;
       IsAlive = true;
    }
 
+   /// <summary>
+   /// Eine Interne Funktion, die für das Spiel wichtig ist. Kann ignoriert werden.
+   /// Falls du dich dafür interessierst, was sie macht:
+   /// Erstellt eine Kopie der Daten der Schlange. Wird für das Replay von Runden verwendet.
+   /// </summary>
+   /// <returns>Die Kopie des Objekts</returns>
    public object Clone() {
       SnakeData clone = new SnakeData(Owner, Color);
       clone.Direction = Direction;

@@ -70,7 +70,7 @@ public class GameState : ICloneable {
    /// Falls du dich dafür interessierst, was sie macht:
    /// Erstellt eine Kopie des derzeitigen Game State. Wird für das Replay von Runden verwendet.
    /// </summary>
-   /// <returns></returns>
+   /// <returns>Die Kopie des Objekts</returns>
    public object Clone() {
       GameState clone = new GameState();
       clone.Snake_1 = (SnakeData)Snake_1.Clone();
