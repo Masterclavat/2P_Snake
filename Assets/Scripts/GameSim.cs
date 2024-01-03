@@ -13,18 +13,22 @@ public class GameSim : MonoBehaviour {
    public Vector2Int GridSize = new Vector2Int(30, 20);
    public float SimulationStarted = 0f;
    public float SimulationEnded = 0f;
+   public int MaxThreads = 6;
 
    public int GamesToSimulate { get; private set; }
+   private void Start() {
+      GamesToSimulate = 1000;
+   }
 
    private void Update() {
       if (Input.GetKeyDown(KeyCode.F9)) {
-         StartCoroutine(SimulateGames(1000));
+         StartCoroutine(SimulateGames(GamesToSimulate));
       }
       else if (Input.GetKeyDown(KeyCode.F10)) {
-         SimulateGames_Async(1000);
+         SimulateGames_Async(GamesToSimulate);
       }
       else if (Input.GetKeyDown(KeyCode.F11)) {
-         SimulateGames_Threaded(1000);
+         SimulateGames_Threaded(GamesToSimulate);
       }
    }
 
@@ -53,7 +57,7 @@ public class GameSim : MonoBehaviour {
       SimulationStarted = Time.time;
       GamesToSimulate = numberOfGames;
       ClearGamesQueue();
-      int numberOfThreads = 6;
+      int numberOfThreads = MaxThreads;
       List<Thread> threads = new List<Thread>();
       for (int ts = 0; ts < numberOfThreads; ts++) {
          Thread t = new Thread(new ThreadStart(() => {

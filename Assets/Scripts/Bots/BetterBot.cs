@@ -9,7 +9,7 @@ public class BetterBot : SnakeBot {
    List<Vector2Int> lastPath;
    public override SnakeDirection Tick(GameState gameState, SnakeData mySnake, SnakeData otherSnake) {
       List<Vector2Int> path = null;
-      if (lastPath == null || lastPath.Count == 0 || !gameState.FoodLocations.Contains(lastPath.Last())) {
+      if (lastPath == null || lastPath.Count == 0 || lastPath[0] != mySnake.Head || !gameState.FoodLocations.Contains(lastPath.Last())) {
          path = BotUtilities.FindPathToNearestFood_AStar(gameState, mySnake);
          lastPath = path;
       }

@@ -10,6 +10,18 @@ public class GameLogic {
    public int MaxFood { get => maxFood; }
    public Vector2Int GridSize { get => gameGridSize; }
    public SnakeData Winner { get; private set; }
+   public string WinnerName { 
+      get {
+         if (Winner == null)
+            return "Draw";
+         else if (Winner == CurrentGameState.Snake_1)
+            return "Snake 1";
+         else if (Winner == CurrentGameState.Snake_2)
+            return "Snake 2";
+         else
+            return "Unknown";
+      } 
+   }
    public List<GameState> Memory = new List<GameState>();
    public int Ticks { get; private set; }
    public int MaxTicks { get => maxTicks; }

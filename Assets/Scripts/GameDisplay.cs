@@ -154,23 +154,31 @@ public class GameDisplay : MonoBehaviour {
       float simTime = Simulator.SimulationEnded - Simulator.SimulationStarted;
       if (simTime < 0f)
          simTime = Time.time - Simulator.SimulationStarted;
-      statusSB.AppendFormat("Simulating {0} Games\n", Simulator.Games.Count);
+      statusSB.AppendLine("<b>Simulation Stats</b>");
+      statusSB.AppendFormat("Simulating {0} Games\n", Simulator.GamesToSimulate);
       statusSB.AppendFormat("Games Running: {0}\n", Simulator.Games.Count - gamesFinished);
-      statusSB.AppendFormat("Games Finished: {0}\n", gamesFinished);
+      statusSB.AppendFormat("Games Finished: {0}/{1} ({2}%)\n", gamesFinished, Simulator.GamesToSimulate, ((float)gamesFinished / Simulator.GamesToSimulate * 100).ToString("N2"));
       statusSB.AppendFormat("Snake1 Won: {0} ({1}%)\n", snake1Win, (snake1Win / (float)gamesFinished * 100).ToString("N2"));
       statusSB.AppendFormat("Snake2 Won: {0} ({1}%)\n", snake2Win, (snake2Win / (float)gamesFinished * 100).ToString("N2"));
       statusSB.AppendFormat("Draws: {0} ({1}%)\n", draw, (draw / (float)gamesFinished * 100).ToString("N2"));
       statusSB.AppendFormat("Ended in Tick Limit: {0} ({1}%)\n", tickLimit, (tickLimit / (float)gamesFinished * 100).ToString("N2"));
-      statusSB.AppendFormat("Simulation Time: {0}s", (simTime).ToString("N2"));
+      statusSB.AppendFormat("Simulation Time: {0}s\n", (simTime).ToString("N2"));
       statusSB.AppendLine();
+      statusSB.AppendLine("<b>Input Guide</b>");
       statusSB.AppendLine("Press F1 for next game");
       statusSB.AppendLine("Press F2 for next game where Snake_1 won");
       statusSB.AppendLine("Press F3 for next game where Snake_2 won");
       statusSB.AppendLine("Press F4 for next game that ended in a draw");
       statusSB.AppendLine("Press F5 for next game that ended by tick limit");
       statusSB.AppendLine("Press F6 to replay the current game");
+      statusSB.AppendFormat("Press F11 to simulate {0} games\n", Simulator.GamesToSimulate);
       statusSB.AppendLine();
-      statusSB.AppendFormat("Current Game: {0}\n", currentGameIndex);
+      if (currentGameIndex > 0 && Game != null) {
+         statusSB.AppendLine("<b>Game Stats</b>");
+         statusSB.AppendFormat("Current Game: {0}\n", currentGameIndex);
+         statusSB.AppendFormat("Winner: {0}\n", Game.WinnerName);
+         statusSB.AppendFormat("Game Length: {0} ticks", Game.Ticks);
+      }
 
       StatusTextMesh.text = statusSB.ToString();
       statusSB.Clear();
@@ -216,6 +224,7 @@ public class GameDisplay : MonoBehaviour {
             currentGameIndex = i;
             currentMemoryIndex = 0;
             lastTick = 0f;
+            return;
          }
       }
    }
@@ -228,6 +237,7 @@ public class GameDisplay : MonoBehaviour {
             currentGameIndex = i;
             currentMemoryIndex = 0;
             lastTick = 0f;
+            return;
          }
       }
    }
