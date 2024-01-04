@@ -60,12 +60,16 @@ public static class BotUtilities {
    }
 
    public static List<Vector2Int> FindPathToNearestTargetLocation_AStar(GameState gameState, SnakeData mySnake, IEnumerable<Vector2Int> targetLocations, IEnumerable<Vector2Int> ignore = null) {
+      return FindNearestPathFromPointToPoint(gameState, mySnake.Head, targetLocations, ignore);
+   }
+
+   public static List<Vector2Int> FindNearestPathFromPointToPoint(GameState gameState, Vector2Int startPoint, IEnumerable<Vector2Int> targetLocations, IEnumerable<Vector2Int> ignore = null) {
       if (ignore == null)
          ignore = new Vector2Int[] { };
       List<Vector2Int> open = new List<Vector2Int>();
       List<Vector2Int> closed = new List<Vector2Int>();
       Dictionary<Vector2Int, Vector2Int> parents = new Dictionary<Vector2Int, Vector2Int>();
-      open.Add(mySnake.Head);
+      open.Add(startPoint);
 
       while (open.Count > 0) {
          int lowestDistance = int.MaxValue;
@@ -155,4 +159,5 @@ public static class BotUtilities {
 
       return adjLocations.ToArray();
    }
+
 }
