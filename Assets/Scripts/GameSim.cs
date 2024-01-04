@@ -106,8 +106,8 @@ public class GameSim : MonoBehaviour {
    }
 
    private void StartGameThreadSafe() {
-      SnakeBot bot1 = new BetterBot();
-      SnakeBot bot2 = new AggroBot();
+      SnakeBot bot1 = new DumbBot();
+      SnakeBot bot2 = new BetterBot();
 
       GameLogic Game = new GameLogic(GridSize, bot1, bot2, true);
       Games.Enqueue(Game);

@@ -30,12 +30,14 @@ public class GameDisplay : MonoBehaviour {
    void Start() {
       Vector2Int gridSize = Simulator.GridSize;
       GridTiles = new GameObject[gridSize.x * gridSize.y];
-      float tileSize = 30;
+      Vector2 tileSize = (TilePrefab.transform as RectTransform).rect.size;
       float offsetX = 100f;
+      float offsetY = (GridParent.GetComponentInParent<CanvasScaler>().referenceResolution.y - (GridMargin * (gridSize.y + 1) + tileSize.y * gridSize.y)) / 2;
       for (int i = 0; i < gridSize.x; i++) {
          for (int j = 0; j < gridSize.y; j++) {
             GameObject tile = Instantiate(TilePrefab, GridParent);
-            (tile.transform as RectTransform).localPosition = new Vector3(offsetX + (i - gridSize.x / 2) * tileSize + GridMargin * i, (j - gridSize.y / 2) * tileSize + GridMargin * j, 0);
+            (tile.transform as RectTransform).anchoredPosition = new Vector3(offsetX + (i - gridSize.x / 2) * tileSize.x + GridMargin * i, j * tileSize.y + GridMargin*(j+1) + offsetY, 0);
+            tile.name = string.Format("Tile ({0}/{1})", i, j);
             GridTiles[i * gridSize.y + j] = tile;
          }
       }
@@ -70,7 +72,7 @@ public class GameDisplay : MonoBehaviour {
       }
       else if (Input.GetKeyDown(KeyCode.A)) {
          if (Game != null && currentMemoryIndex > 0) {
-            currentMemoryIndex-=2;
+            currentMemoryIndex -= 2;
             advanceSingleTick = true;
          }
       }
@@ -166,13 +168,13 @@ public class GameDisplay : MonoBehaviour {
       if (simTime < 0f)
          simTime = Time.time - Simulator.SimulationStarted;
       statusSB.AppendLine("<b>Input Guide</b>");
-      statusSB.AppendLine("Press F1 for next game");
-      statusSB.AppendLine("Press F2 for next game where Snake_1 won");
-      statusSB.AppendLine("Press F3 for next game where Snake_2 won");
-      statusSB.AppendLine("Press F4 for next game that ended in a draw");
-      statusSB.AppendLine("Press F5 for next game that ended by tick limit");
-      statusSB.AppendLine("Press F6 to replay the current game");
-      statusSB.AppendFormat("Press F11 to simulate {0} games\n", Simulator.GamesToSimulate);
+      statusSB.AppendLine("F1: next game");
+      statusSB.AppendLine("F2: next game where Snake_1 won");
+      statusSB.AppendLine("F3: next game where Snake_2 won");
+      statusSB.AppendLine("F4: next game that ended in a draw");
+      statusSB.AppendLine("F5: next game that ended by tick limit");
+      statusSB.AppendLine("F6: replay current game");
+      statusSB.AppendFormat("F11: simulate {0} games\n", Simulator.GamesToSimulate);
       statusSB.AppendLine();
       if (Simulator.Games.Count > 0) {
          statusSB.AppendLine("<b>Simulation Stats</b>");
