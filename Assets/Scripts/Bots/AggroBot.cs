@@ -102,4 +102,10 @@ public class AggroBot : SnakeBot {
       }
       return mySnake.Direction;
    }
+
+   private bool CanCutOffEnemy(GameState gameState, SnakeData mySnake, SnakeData otherSnake) {
+      if (mySnake.Head.x * 2 <= mySnake.Segments.Count) {
+         GameState tmpState = (GameState)gameState.Clone();
+      }
+   }
 }

@@ -16,8 +16,11 @@ public class GameSim : MonoBehaviour {
    public int MaxThreads = 6;
 
    public int GamesToSimulate { get; private set; }
+   public bool SaveHistory { get; private set; }
+
    private void Start() {
-      GamesToSimulate = 200;
+      GamesToSimulate = 10000;
+      SaveHistory = false;
    }
 
    private void Update() {
@@ -98,7 +101,7 @@ public class GameSim : MonoBehaviour {
    private void StartGame() {
       SnakeBot bot1 = new DumbBot();
       SnakeBot bot2 = new AggroBot();
-      GameLogic Game = new GameLogic(GridSize, bot1, bot2, true);
+      GameLogic Game = new GameLogic(GridSize, bot1, bot2, SaveHistory);
       Games.Enqueue(Game);
       while (Game.CurrentGameState.IsGameInProgress) {
          Game.NextTick();
@@ -109,7 +112,7 @@ public class GameSim : MonoBehaviour {
       SnakeBot bot1 = new DumbBot();
       SnakeBot bot2 = new AggroBot();
 
-      GameLogic Game = new GameLogic(GridSize, bot1, bot2, true);
+      GameLogic Game = new GameLogic(GridSize, bot1, bot2, SaveHistory);
       Games.Enqueue(Game);
 
       while (Game.CurrentGameState.IsGameInProgress) {

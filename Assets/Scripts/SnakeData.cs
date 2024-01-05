@@ -48,6 +48,14 @@ public class SnakeData : ICloneable {
       IsAlive = true;
    }
 
+   public void Move() {
+      if (!IsAlive)
+         return;
+      Vector2Int NextSeg = Head + BotUtilities.DirectionChange[Direction];
+      Segments.RemoveAt(0);
+      Segments.Add(NextSeg);
+   }
+
    /// <summary>
    /// Eine Interne Funktion, die für das Spiel wichtig ist. Kann ignoriert werden.
    /// Falls du dich dafür interessierst, was sie macht:

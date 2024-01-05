@@ -44,6 +44,9 @@ public class GameLogic {
       CurrentGameState.Snake_1 = new SnakeData(bot1, Color.cyan);
       CurrentGameState.Snake_2 = new SnakeData(bot2, Color.green);
       SetStartingPositions();
+      while (CurrentGameState.FoodLocations.Count < MaxFood) {
+         SpawnFood();
+      }
       CurrentGameState.IsGameInProgress = true;
    }
    public GameLogic(Vector2Int gridSize, SnakeBot bot1, SnakeBot bot2, bool withMemory = true) : this(gridSize, bot1, bot2, Guid.NewGuid().GetHashCode(), withMemory) { }
@@ -90,13 +93,10 @@ public class GameLogic {
             return new Vector2Int(rand.Next(gameGridSize.x / 2 + 3, gameGridSize.x - 3), rand.Next(3, gameGridSize.y / 2 - 3));
       }
 
-      throw new ArgumentException("quadrant must be between 0 and 3");
+      throw new ArgumentException("Quadrant must be between 0 and 3","quadrant");
    }
 
    public void NextTick() {
-      while (CurrentGameState.FoodLocations.Count < MaxFood) {
-         SpawnFood();
-      }
       SnakeDirection prefDirection = CurrentGameState.Snake_1.Owner.Tick(CurrentGameState, CurrentGameState.Snake_1, CurrentGameState.Snake_2);
       CurrentGameState.Snake_1.Direction = isDirectionChangeAllowed(CurrentGameState.Snake_1.Direction, prefDirection) ?
                                                                      prefDirection : CurrentGameState.Snake_1.Direction;
@@ -112,15 +112,15 @@ public class GameLogic {
       }
       if (CurrentGameState.Snake_1.IsAlive && CurrentGameState.Snake_2.IsAlive) {
          if (CurrentGameState.Snake_1.NextHeadPosition == CurrentGameState.Snake_2.NextHeadPosition) {
-            moveSnake(CurrentGameState.Snake_1);
-            moveSnake(CurrentGameState.Snake_2);
+            CurrentGameState.Snake_1.Move();
+            CurrentGameState.Snake_2.Move();
             SnakeDied(CurrentGameState.Snake_1);
             SnakeDied(CurrentGameState.Snake_2);
          }
       }
 
-      moveSnake(CurrentGameState.Snake_1);
-      moveSnake(CurrentGameState.Snake_2);
+      CurrentGameState.Snake_1.Move();
+      CurrentGameState.Snake_2.Move();
       if (Ticks >= maxTicks) {
          if (CurrentGameState.Snake_1.Segments.Count <  CurrentGameState.Snake_2.Segments.Count) {
             SnakeDied(CurrentGameState.Snake_1);
@@ -141,7 +141,11 @@ public class GameLogic {
          CurrentGameState.FoodLocations.Remove(foodEaten);
       }
 
-      if(storeMemory)
+      while (CurrentGameState.FoodLocations.Count < MaxFood) {
+         SpawnFood();
+      }
+
+      if (storeMemory)
          Memory.Add((GameState)CurrentGameState.Clone());
       Ticks++;
    }
@@ -181,14 +185,6 @@ public class GameLogic {
       else {
          Winner = null;
       }
-   }
-
-   private void moveSnake(SnakeData snake) {
-      if (!snake.IsAlive)
-         return;
-      Vector2Int NextSeg = snake.Head + BotUtilities.DirectionChange[snake.Direction];
-      snake.Segments.RemoveAt(0);
-      snake.Segments.Add(NextSeg);
    }
 
    private bool checkSnakeEatsFood(SnakeData snake, out Vector2Int foodEaten) {
