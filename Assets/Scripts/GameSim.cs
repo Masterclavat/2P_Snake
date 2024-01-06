@@ -15,12 +15,17 @@ public class GameSim : MonoBehaviour {
    public float SimulationEnded = 0f;
    public int MaxThreads = 6;
 
-   public int GamesToSimulate { get; private set; }
+   public int GamesToSimulate { get => gamesToSimulate; }
    public bool SaveHistory { get; private set; }
 
+   private int gamesToSimulate = 1000;
+   private Dictionary<string, SnakeBot> botNames = new Dictionary<string, SnakeBot>() { { "DumbBot",new DumbBot() },
+                                                                                        { "BetterBot", new BetterBot()},
+                                                                                        { "AggroBot", new AggroBot()} };
+
    private void Start() {
-      GamesToSimulate = 10000;
-      SaveHistory = false;
+      gamesToSimulate = 1000;
+      SaveHistory = true;
    }
 
    private void Update() {
@@ -37,7 +42,7 @@ public class GameSim : MonoBehaviour {
 
    private IEnumerator SimulateGames(int numberOfGames) {
       SimulationStarted = Time.time;
-      GamesToSimulate = numberOfGames;
+      gamesToSimulate = numberOfGames;
       ClearGamesQueue();
       while (Games.Count < GamesToSimulate) {
          StartGame();
@@ -48,7 +53,7 @@ public class GameSim : MonoBehaviour {
 
    private async void SimulateGames_Async(int numberOfGames) {
       SimulationStarted = Time.time;
-      GamesToSimulate = numberOfGames;
+      gamesToSimulate = numberOfGames;
       ClearGamesQueue();
       for (int i = 0; i < numberOfGames; i++) {
          await Task.Run(StartGame);
@@ -58,14 +63,14 @@ public class GameSim : MonoBehaviour {
 
    private async void SimulateGames_Threaded(int numberOfGames) {
       SimulationStarted = Time.time;
-      GamesToSimulate = numberOfGames;
+      gamesToSimulate = numberOfGames;
       ClearGamesQueue();
       int numberOfThreads = MaxThreads;
       List<Thread> threads = new List<Thread>();
       for (int ts = 0; ts < numberOfThreads; ts++) {
          Thread t = new Thread(new ThreadStart(() => {
             for (int i = 0; i < numberOfGames / numberOfThreads; i++) {
-               StartGameThreadSafe();
+               StartGame();
             }
          }));
          threads.Add(t);
@@ -74,7 +79,7 @@ public class GameSim : MonoBehaviour {
       int extraGames = numberOfGames - (numberOfGames / numberOfThreads) * numberOfThreads;
       Thread t2 = new Thread(new ThreadStart(() => {
          for (int i = 0; i < extraGames; i++) {
-            StartGameThreadSafe();
+            StartGame();
          }
       }));
       threads.Add(t2);
@@ -99,22 +104,11 @@ public class GameSim : MonoBehaviour {
    }
 
    private void StartGame() {
+      //TODO
       SnakeBot bot1 = new DumbBot();
       SnakeBot bot2 = new AggroBot();
       GameLogic Game = new GameLogic(GridSize, bot1, bot2, SaveHistory);
       Games.Enqueue(Game);
-      while (Game.CurrentGameState.IsGameInProgress) {
-         Game.NextTick();
-      }
-   }
-
-   private void StartGameThreadSafe() {
-      SnakeBot bot1 = new DumbBot();
-      SnakeBot bot2 = new AggroBot();
-
-      GameLogic Game = new GameLogic(GridSize, bot1, bot2, SaveHistory);
-      Games.Enqueue(Game);
-
       while (Game.CurrentGameState.IsGameInProgress) {
          Game.NextTick();
       }

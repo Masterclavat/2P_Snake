@@ -17,6 +17,7 @@ public class GameDisplay : MonoBehaviour {
    public Color Snake1Color = Color.cyan;
    public Color Snake2Color = Color.green;
    public TextMeshProUGUI StatusTextMesh;
+   public TMP_Dropdown[] SnakeBotSelects = new TMP_Dropdown[2];
 
    [SerializeField]
    private float GameTickRate = 0.1f;
@@ -40,6 +41,15 @@ public class GameDisplay : MonoBehaviour {
             tile.name = string.Format("Tile ({0}/{1})", i, j);
             GridTiles[i * gridSize.y + j] = tile;
          }
+      }
+
+      List<string> botNames = new List<string>() { "DumbBot", "BetterBot", "AggroBot" };
+
+      foreach(TMP_Dropdown select in SnakeBotSelects) {
+         if (select == null)
+            continue;
+         select.ClearOptions();
+         select.AddOptions(botNames);
       }
    }
 
