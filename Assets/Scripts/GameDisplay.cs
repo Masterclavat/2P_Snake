@@ -24,6 +24,7 @@ public class GameDisplay : MonoBehaviour {
    public PercentageGraph Bot2Graph;
    public PercentageGraph DrawGraph;
    public GameObject GraphPanel;
+   public Toggle GraphEnableCheckbox;
 
    [SerializeField]
    private float GameTickRate = 0.1f;
@@ -164,7 +165,7 @@ public class GameDisplay : MonoBehaviour {
    private void FixedUpdate() {
       aggregateAndDisplayStatus();
       if(GraphPanel != null)
-         GraphPanel.SetActive(Simulator.SimulationEnded == 0f && Simulator.SimulationStarted > 0f);
+         GraphPanel.SetActive(GraphEnableCheckbox.isOn && Simulator.SimulationEnded == 0f && Simulator.SimulationStarted > 0f);
    }
 
    private void drawGraph(int bot1Wins, int bot2Wins, int draws, int total) {
@@ -231,7 +232,7 @@ public class GameDisplay : MonoBehaviour {
       StatusTextMesh.text = statusSB.ToString();
       statusSB.Clear();
 
-      if (Simulator.Games.Count > 0) {
+      if (Simulator.Games.Count > 0 && GraphEnableCheckbox.isOn) {
          if (lastNumberOfCompletedGames < gamesFinished) {
             drawGraph(snake1Win, snake2Win, draw, gamesFinished);
          }
