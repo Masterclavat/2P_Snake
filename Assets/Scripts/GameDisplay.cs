@@ -52,15 +52,29 @@ public class GameDisplay : MonoBehaviour {
       }
       List<string> botNames = new List<string>(Simulator.BotTypes.Select(x => x.Name));
 
-      SnakeBotSelects[0].onValueChanged.AddListener((i) => Simulator.Bot1 = Simulator.BotTypes.First(x => x.Name == SnakeBotSelects[0].options[i].text));
-      SnakeBotSelects[1].onValueChanged.AddListener((i) => Simulator.Bot2 = Simulator.BotTypes.First(x => x.Name == SnakeBotSelects[1].options[i].text));
+      SnakeBotSelects[0].onValueChanged.AddListener((i) => { Simulator.Bot1 = Simulator.BotTypes.First(x => x.Name == SnakeBotSelects[0].options[i].text); SaveDropdownState(); });
+      SnakeBotSelects[1].onValueChanged.AddListener((i) => { Simulator.Bot2 = Simulator.BotTypes.First(x => x.Name == SnakeBotSelects[1].options[i].text); SaveDropdownState(); });
+      string[] saved = null;
+      if (System.IO.File.Exists("UserSettings\\botselect.txt")) {
+         saved = System.IO.File.ReadAllLines("UserSettings\\botselect.txt");
 
-      foreach (TMP_Dropdown select in SnakeBotSelects) {
+      }
+
+      for(int i = 0; i< SnakeBotSelects.Length; i++) {
+         TMP_Dropdown select = SnakeBotSelects[i];
          if (select == null)
             continue;
          select.ClearOptions();
          select.AddOptions(botNames);
-         select.onValueChanged.Invoke(0);
+         int index = 0;
+         if (saved != null) {
+            for (index = 0; index < select.options.Count; index++) {
+               if (select.options[index].text == saved[i])
+                  break;
+            }
+         }
+         select.value = index;
+         select.onValueChanged.Invoke(index);
       }
    }
 
@@ -243,6 +257,12 @@ public class GameDisplay : MonoBehaviour {
          }
          lastNumberOfCompletedGames = gamesFinished;
       }
+   }
+
+   private void SaveDropdownState() {
+      string text = SnakeBotSelects[0].options[SnakeBotSelects[0].value].text + "\n" + SnakeBotSelects[1].options[SnakeBotSelects[1].value].text;
+
+      System.IO.File.WriteAllText("UserSettings\\botselect.txt", text);
    }
 
    private void ShowNextGame() {
