@@ -59,6 +59,7 @@
     <Compile Include="Assets\Scripts\Bots\BetterBot.cs" />
     <Compile Include="Assets\Scripts\GameResult.cs" />
     <Compile Include="Assets\Scripts\Bots\DumbBot.cs" />
+    <Compile Include="Assets\Scripts\Bots\AggroBot.cs" />
     <Compile Include="Assets\Scripts\SnakeDirection.cs" />
     <Compile Include="Assets\Scripts\BotUtilities.cs" />
     <Compile Include="Assets\Scripts\GameLogic.cs" />
@@ -67,7 +68,7 @@
     <Compile Include="Assets\Scripts\GameState.cs" />
     <Compile Include="Assets\Scripts\GameDisplay.cs" />
     <Compile Include="Assets\Scripts\SnakeData.cs" />
-    <Compile Include="Assets\Scripts\Bots\AggroBot.cs" />
+    <Compile Include="Assets\Scripts\PercentageGraph.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />

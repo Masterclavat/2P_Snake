@@ -20,6 +20,10 @@ public class GameDisplay : MonoBehaviour {
    public Color Snake2Color = Color.green;
    public TextMeshProUGUI StatusTextMesh;
    public TMP_Dropdown[] SnakeBotSelects = new TMP_Dropdown[2];
+   public PercentageGraph Bot1Graph;
+   public PercentageGraph Bot2Graph;
+   public PercentageGraph DrawGraph;
+   public GameObject GraphPanel;
 
    [SerializeField]
    private float GameTickRate = 0.1f;
@@ -29,6 +33,7 @@ public class GameDisplay : MonoBehaviour {
    private bool paused = false;
    bool advanceSingleTick = false;
    private StringBuilder statusSB = new StringBuilder();
+   private int lastNumberOfCompletedGames = 0;
 
    void Start() {
       Vector2Int gridSize = Simulator.GridSize;
@@ -39,7 +44,7 @@ public class GameDisplay : MonoBehaviour {
       for (int i = 0; i < gridSize.x; i++) {
          for (int j = 0; j < gridSize.y; j++) {
             GameObject tile = Instantiate(TilePrefab, GridParent);
-            (tile.transform as RectTransform).anchoredPosition = new Vector3(offsetX + (i - gridSize.x / 2) * tileSize.x + GridMargin * i, j * tileSize.y + GridMargin*(j+1) + offsetY, 0);
+            (tile.transform as RectTransform).anchoredPosition = new Vector3(offsetX + (i - gridSize.x / 2) * tileSize.x + GridMargin * i, j * tileSize.y + GridMargin * (j + 1) + offsetY, 0);
             tile.name = string.Format("Tile ({0}/{1})", i, j);
             GridTiles[i * gridSize.y + j] = tile;
          }
@@ -55,7 +60,7 @@ public class GameDisplay : MonoBehaviour {
          select.ClearOptions();
          select.AddOptions(botNames);
          select.onValueChanged.Invoke(0);
-      }      
+      }
    }
 
    void Update() {
@@ -158,6 +163,16 @@ public class GameDisplay : MonoBehaviour {
 
    private void FixedUpdate() {
       aggregateAndDisplayStatus();
+      if(GraphPanel != null)
+         GraphPanel.SetActive(Simulator.SimulationEnded == 0f && Simulator.SimulationStarted > 0f);
+   }
+
+   private void drawGraph(int bot1Wins, int bot2Wins, int draws, int total) {
+      if (Simulator.GamesToSimulate == 0 || total == 0)
+         return;
+      Bot1Graph?.AddDataPoint(bot1Wins / (float)total);
+      Bot2Graph?.AddDataPoint(bot2Wins / (float)total);
+      DrawGraph?.AddDataPoint(draws / (float)total);
    }
 
    private void aggregateAndDisplayStatus() {
@@ -215,6 +230,18 @@ public class GameDisplay : MonoBehaviour {
 
       StatusTextMesh.text = statusSB.ToString();
       statusSB.Clear();
+
+      if (Simulator.Games.Count > 0) {
+         if (lastNumberOfCompletedGames < gamesFinished) {
+            drawGraph(snake1Win, snake2Win, draw, gamesFinished);
+         }
+         else if (lastNumberOfCompletedGames > gamesFinished) {
+            Bot1Graph?.ClearDataPoints();
+            Bot2Graph?.ClearDataPoints();
+            DrawGraph?.ClearDataPoints();
+         }
+         lastNumberOfCompletedGames = gamesFinished;
+      }
    }
 
    private void ShowNextGame() {
