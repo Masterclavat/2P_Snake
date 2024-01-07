@@ -190,7 +190,7 @@ public class GameDisplay : MonoBehaviour {
       statusSB.AppendLine("F5: next game that ended by tick limit");
       statusSB.AppendLine("F6: replay current game");
       statusSB.AppendFormat("F11: simulate {0} games\n", Simulator.GamesToSimulate);
-      statusSB.AppendFormat("Using {0} and {1}", Simulator.Bot1.Name, Simulator.Bot2.Name);
+      statusSB.AppendFormat("Using {0} and {1}\n", Simulator.Bot1?.Name, Simulator.Bot2?.Name);
       statusSB.AppendLine();
       if (Simulator.Games.Count > 0) {
          statusSB.AppendLine("<b>Simulation Stats</b>");

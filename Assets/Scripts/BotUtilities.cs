@@ -101,6 +101,8 @@ public static class BotUtilities {
                List<Vector2Int> finalPath = new List<Vector2Int>();
                Vector2Int curr = next;
                while (parents.ContainsKey(curr)) {
+                  if (finalPath.Contains(parents[curr]))
+                     return new List<Vector2Int>();
                   finalPath.Insert(0, curr);
                   curr = parents[curr];
                }

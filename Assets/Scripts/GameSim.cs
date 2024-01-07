@@ -25,8 +25,8 @@ public class GameSim : MonoBehaviour {
    private int gamesToSimulate = 1000;
 
    private void Start() {
-      gamesToSimulate = 1000;
-      SaveHistory = true;
+      gamesToSimulate = 10000;
+      SaveHistory = false;
       if (Directory.Exists(BotDirectory)) {
          foreach (string filePath in Directory.EnumerateFiles(BotDirectory, "*.cs")) {
             string fileName = Path.GetFileNameWithoutExtension(filePath);
@@ -58,8 +58,10 @@ public class GameSim : MonoBehaviour {
       SimulationStarted = Time.time;
       gamesToSimulate = numberOfGames;
       ClearGamesQueue();
+      Type tBot1 = Bot1;
+      Type tBot2 = Bot2;
       while (Games.Count < GamesToSimulate) {
-         StartGame();
+         StartGame(tBot1, tBot2);
          yield return null;
       }
       SimulationEnded = Time.time;
@@ -69,8 +71,10 @@ public class GameSim : MonoBehaviour {
       SimulationStarted = Time.time;
       gamesToSimulate = numberOfGames;
       ClearGamesQueue();
+      Type tBot1 = Bot1;
+      Type tBot2 = Bot2;
       for (int i = 0; i < numberOfGames; i++) {
-         await Task.Run(StartGame);
+         await Task.Run(()=> StartGame(tBot1, tBot2));
       }
       SimulationEnded = Time.time;
    }
@@ -79,12 +83,14 @@ public class GameSim : MonoBehaviour {
       SimulationStarted = Time.time;
       gamesToSimulate = numberOfGames;
       ClearGamesQueue();
+      Type tBot1 = Bot1;
+      Type tBot2 = Bot2;
       int numberOfThreads = MaxThreads;
       List<Thread> threads = new List<Thread>();
       for (int ts = 0; ts < numberOfThreads; ts++) {
          Thread t = new Thread(new ThreadStart(() => {
             for (int i = 0; i < numberOfGames / numberOfThreads; i++) {
-               StartGame();
+               StartGame(tBot1, tBot2);
             }
          }));
          threads.Add(t);
@@ -93,7 +99,7 @@ public class GameSim : MonoBehaviour {
       int extraGames = numberOfGames - (numberOfGames / numberOfThreads) * numberOfThreads;
       Thread t2 = new Thread(new ThreadStart(() => {
          for (int i = 0; i < extraGames; i++) {
-            StartGame();
+            StartGame(tBot1, tBot2);
          }
       }));
       threads.Add(t2);
@@ -117,11 +123,11 @@ public class GameSim : MonoBehaviour {
       SimulationEnded = Time.time;
    }
 
-   private void StartGame() {
-      if (Bot1 == null || Bot2 == null)
+   private void StartGame(Type tBot1, Type tBot2) {
+      if (tBot1 == null || tBot2 == null)
          return;
-      SnakeBot bot1 = Activator.CreateInstance(Bot1) as SnakeBot;
-      SnakeBot bot2 = Activator.CreateInstance(Bot2) as SnakeBot;
+      SnakeBot bot1 = Activator.CreateInstance(tBot1) as SnakeBot;
+      SnakeBot bot2 = Activator.CreateInstance(tBot2) as SnakeBot;
       GameLogic Game = new GameLogic(GridSize, bot1, bot2, SaveHistory);
       Games.Enqueue(Game);
       while (Game.CurrentGameState.IsGameInProgress) {

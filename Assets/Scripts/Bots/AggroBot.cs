@@ -38,6 +38,9 @@ public class AggroBot : SnakeBot {
                }
             }
          }
+         //if(CanCutOffEnemy(gameState, mySnake, otherSnake)) {
+         //   return mySnake.Direction;
+         //}
          path = BotUtilities.FindPathToTargetFood_AStar(gameState, mySnake, gameState.FindNearestFood(mySnake));
          //Speichere den Pfad, um ihn anzeigen lassen zu können
          mySnake.DebugData = path.ToArray();
@@ -106,11 +109,14 @@ public class AggroBot : SnakeBot {
    }
 
    private bool CanCutOffEnemy(GameState gameState, SnakeData mySnake, SnakeData otherSnake) {
-      if (mySnake.Head.x * 2 <= mySnake.Segments.Count) {
-         GameState tmpState = (GameState)gameState.Clone();
-
+      GameState tmpState = (GameState)gameState.Clone();
+      int i = 1;
+      while (tmpState.IsTileSafe(mySnake.Head + BotUtilities.DirectionChange[mySnake.Direction] * i)) {
+         SnakeData tmpSnake = tmpState.FindMySnake(mySnake.Owner);
+         tmpSnake.Move();
       }
+      var tmpPath = BotUtilities.FindPathToNearestFood_AStar(tmpState, tmpState.FindMySnake(mySnake.Owner));
 
-      return false;
+      return tmpPath == null || tmpPath.Count <= 0;
    }
 }
