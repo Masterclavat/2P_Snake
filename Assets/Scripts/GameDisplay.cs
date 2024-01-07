@@ -60,7 +60,7 @@ public class GameDisplay : MonoBehaviour {
 
       }
 
-      for(int i = 0; i< SnakeBotSelects.Length; i++) {
+      for (int i = 0; i < SnakeBotSelects.Length; i++) {
          TMP_Dropdown select = SnakeBotSelects[i];
          if (select == null)
             continue;
@@ -79,25 +79,27 @@ public class GameDisplay : MonoBehaviour {
    }
 
    void Update() {
-      if (Input.GetKeyDown(KeyCode.F1)) {
-         ShowNextGame();
+      if (Simulator.Games.Count > 0) {
+         if (Input.GetKeyDown(KeyCode.F1)) {
+            ShowNextGame();
+         }
+         else if (Input.GetKeyDown(KeyCode.F2)) {
+            ShowNextGame_WinnerSnake_1();
+         }
+         else if (Input.GetKeyDown(KeyCode.F3)) {
+            ShowNextGame_WinnerSnake_2();
+         }
+         else if (Input.GetKeyDown(KeyCode.F4)) {
+            ShowNextGame_Draw();
+         }
+         else if (Input.GetKeyDown(KeyCode.F5)) {
+            ShowNextGame_TickLimit();
+         }
+         else if (Input.GetKeyDown(KeyCode.F6)) {
+            ReplayCurrentGame();
+         }
       }
-      else if (Input.GetKeyDown(KeyCode.F2)) {
-         ShowNextGame_WinnerSnake_1();
-      }
-      else if (Input.GetKeyDown(KeyCode.F3)) {
-         ShowNextGame_WinnerSnake_2();
-      }
-      else if (Input.GetKeyDown(KeyCode.F4)) {
-         ShowNextGame_Draw();
-      }
-      else if (Input.GetKeyDown(KeyCode.F5)) {
-         ShowNextGame_TickLimit();
-      }
-      else if (Input.GetKeyDown(KeyCode.F6)) {
-         ReplayCurrentGame();
-      }
-      else if (Input.GetKeyDown(KeyCode.Space)) {
+      if (Input.GetKeyDown(KeyCode.Space)) {
          paused = !paused;
       }
       else if (Input.GetKeyDown(KeyCode.D)) {
@@ -178,7 +180,7 @@ public class GameDisplay : MonoBehaviour {
 
    private void FixedUpdate() {
       aggregateAndDisplayStatus();
-      if(GraphPanel != null)
+      if (GraphPanel != null)
          GraphPanel.SetActive(GraphEnableCheckbox.isOn && Simulator.SimulationEnded == 0f && Simulator.SimulationStarted > 0f);
    }
 
