@@ -1,9 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System.Text;
+using System;
 
 public class GameDisplay : MonoBehaviour {
    public GameObject TilePrefab;
@@ -42,15 +44,18 @@ public class GameDisplay : MonoBehaviour {
             GridTiles[i * gridSize.y + j] = tile;
          }
       }
+      List<string> botNames = new List<string>(Simulator.BotTypes.Select(x => x.Name));
 
-      List<string> botNames = new List<string>() { "DumbBot", "BetterBot", "AggroBot" };
+      SnakeBotSelects[0].onValueChanged.AddListener((i) => Simulator.Bot1 = Simulator.BotTypes.First(x => x.Name == SnakeBotSelects[0].options[i].text));
+      SnakeBotSelects[1].onValueChanged.AddListener((i) => Simulator.Bot2 = Simulator.BotTypes.First(x => x.Name == SnakeBotSelects[1].options[i].text));
 
-      foreach(TMP_Dropdown select in SnakeBotSelects) {
+      foreach (TMP_Dropdown select in SnakeBotSelects) {
          if (select == null)
             continue;
          select.ClearOptions();
          select.AddOptions(botNames);
-      }
+         select.onValueChanged.Invoke(0);
+      }      
    }
 
    void Update() {
@@ -185,6 +190,7 @@ public class GameDisplay : MonoBehaviour {
       statusSB.AppendLine("F5: next game that ended by tick limit");
       statusSB.AppendLine("F6: replay current game");
       statusSB.AppendFormat("F11: simulate {0} games\n", Simulator.GamesToSimulate);
+      statusSB.AppendFormat("Using {0} and {1}", Simulator.Bot1.Name, Simulator.Bot2.Name);
       statusSB.AppendLine();
       if (Simulator.Games.Count > 0) {
          statusSB.AppendLine("<b>Simulation Stats</b>");

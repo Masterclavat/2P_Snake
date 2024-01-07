@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 using System.Threading;
+using System.IO;
 
 public class GameSim : MonoBehaviour {
    public ConcurrentQueue<GameLogic> Games = new ConcurrentQueue<GameLogic>();
@@ -14,18 +15,27 @@ public class GameSim : MonoBehaviour {
    public float SimulationStarted = 0f;
    public float SimulationEnded = 0f;
    public int MaxThreads = 6;
-
+   public string BotDirectory = "Assets\\Scripts\\Bots";
    public int GamesToSimulate { get => gamesToSimulate; }
    public bool SaveHistory { get; private set; }
+   public List<Type> BotTypes = new List<Type>();
+   public Type Bot1 { get; set; }
+   public Type Bot2 { get; set; }
 
    private int gamesToSimulate = 1000;
-   private Dictionary<string, SnakeBot> botNames = new Dictionary<string, SnakeBot>() { { "DumbBot",new DumbBot() },
-                                                                                        { "BetterBot", new BetterBot()},
-                                                                                        { "AggroBot", new AggroBot()} };
 
    private void Start() {
       gamesToSimulate = 1000;
       SaveHistory = true;
+      if (Directory.Exists(BotDirectory)) {
+         foreach (string filePath in Directory.EnumerateFiles(BotDirectory, "*.cs")) {
+            string fileName = Path.GetFileNameWithoutExtension(filePath);
+            Type t = Type.GetType(fileName);
+            if (t != null) {
+               BotTypes.Add(t);
+            }
+         }
+      }
    }
 
    private void Update() {
@@ -37,6 +47,10 @@ public class GameSim : MonoBehaviour {
       }
       else if (Input.GetKeyDown(KeyCode.F11)) {
          SimulateGames_Threaded(GamesToSimulate);
+      }
+      if (Input.GetKeyDown(KeyCode.F12)) {
+         print(Bot1.Name);
+         print(Bot2.Name);
       }
    }
 
@@ -104,9 +118,10 @@ public class GameSim : MonoBehaviour {
    }
 
    private void StartGame() {
-      //TODO
-      SnakeBot bot1 = new DumbBot();
-      SnakeBot bot2 = new AggroBot();
+      if (Bot1 == null || Bot2 == null)
+         return;
+      SnakeBot bot1 = Activator.CreateInstance(Bot1) as SnakeBot;
+      SnakeBot bot2 = Activator.CreateInstance(Bot2) as SnakeBot;
       GameLogic Game = new GameLogic(GridSize, bot1, bot2, SaveHistory);
       Games.Enqueue(Game);
       while (Game.CurrentGameState.IsGameInProgress) {
@@ -121,4 +136,5 @@ public class GameSim : MonoBehaviour {
          }
       }
    }
+
 }

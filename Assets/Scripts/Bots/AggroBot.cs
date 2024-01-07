@@ -8,6 +8,8 @@ using UnityEngine;
 public class AggroBot : SnakeBot {
    private int defensiveSegments = 6;
    Vector2Int targetFood;
+
+
    public override SnakeDirection Tick(GameState gameState, SnakeData mySnake, SnakeData otherSnake) {
       if (mySnake.Segments.Count < defensiveSegments) {
          return PlayDefensively(gameState, mySnake, otherSnake);
