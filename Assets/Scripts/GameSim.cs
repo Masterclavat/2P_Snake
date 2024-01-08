@@ -16,7 +16,7 @@ public class GameSim : MonoBehaviour {
    public float SimulationEnded = 0f;
    public int MaxThreads = 6;
    public string BotDirectory = "Assets\\Scripts\\Bots";
-   public int GamesToSimulate { get => gamesToSimulate; }
+   public int GamesToSimulate { get => gamesToSimulate; set => gamesToSimulate = value; }
    public bool SaveHistory { get; private set; }
    public List<Type> BotTypes = new List<Type>();
    public Type Bot1 { get; set; }
@@ -25,7 +25,6 @@ public class GameSim : MonoBehaviour {
    private int gamesToSimulate = 1000;
 
    private void Start() {
-      gamesToSimulate = 10000;
       SaveHistory = false;
       if (Directory.Exists(BotDirectory)) {
          foreach (string filePath in Directory.EnumerateFiles(BotDirectory, "*.cs")) {
