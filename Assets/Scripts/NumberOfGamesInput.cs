@@ -13,10 +13,8 @@ public class NumberOfGamesInput : MonoBehaviour {
    }
 
    private void SetGamesToSimulate(string input) {
-      if(Simulator != null) {
-         if(int.TryParse(input, out int num)) {
-            Simulator.GamesToSimulate = num;
-         }
+      if (int.TryParse(input, out int num)) {
+         Simulator.GamesToSimulate = num;
       }
    }
 }

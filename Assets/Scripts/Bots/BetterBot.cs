@@ -10,7 +10,7 @@ public class BetterBot : SnakeBot {
    public override SnakeDirection Tick(GameState gameState, SnakeData mySnake, SnakeData otherSnake) {
       List<Vector2Int> path = null;
       //Finde einen Pfad zur nächsten Futterkoordinate
-      path = BotUtilities.FindPathToNearestFood_AStar(gameState, mySnake);
+      path = BotUtilities.FindPathToNearestFood(gameState, mySnake);
 
       //Speichere den Pfad, um ihn anzeigen lassen zu können
       mySnake.DebugData = path.ToArray();

@@ -29,7 +29,7 @@ public static class BotUtilities {
    /// Wenn dieser Parameter null ist, werden alle Futterkoordinaten in betracht gezogen.</param>
    /// <returns>Gibt eine Liste von Koordinaten zurück, die den Weg beschreiben. Startet vom Kopf der Schlange
    /// und führt bis zum nächsten Futter.</returns>
-   public static List<Vector2Int> FindPathToNearestFood_AStar(GameState gameState, SnakeData mySnake, IEnumerable<Vector2Int> ignoreFood = null) {
+   public static List<Vector2Int> FindPathToNearestFood(GameState gameState, SnakeData mySnake, IEnumerable<Vector2Int> ignoreFood = null) {
       List<Vector2Int> validFoodTargets = new List<Vector2Int>();
       if (ignoreFood != null) {
          foreach (Vector2Int foodPos in gameState.FoodLocations) {
@@ -42,24 +42,24 @@ public static class BotUtilities {
          validFoodTargets.AddRange(gameState.FoodLocations);
       }
 
-      return FindPathToNearestTargetLocation_AStar(gameState, mySnake, validFoodTargets);
+      return FindPathToNearestTargetLocation(gameState, mySnake, validFoodTargets);
    }
 
-   public static List<Vector2Int> FindPathToTargetFood_AStar(GameState gameState, SnakeData mySnake, Vector2Int targetFood) {
+   public static List<Vector2Int> FindPathToTargetFood(GameState gameState, SnakeData mySnake, Vector2Int targetFood) {
       List<Vector2Int> ignoreFood = new List<Vector2Int>();
       foreach (Vector2Int foodLoc in gameState.FoodLocations) {
          if (foodLoc != targetFood)
             ignoreFood.Add(foodLoc);
       }
 
-      return FindPathToNearestFood_AStar(gameState, mySnake, ignoreFood);
+      return FindPathToNearestFood(gameState, mySnake, ignoreFood);
    }
 
-   public static List<Vector2Int> FindPathToTargetLocation_AStar(GameState gameState, SnakeData mySnake, Vector2Int targetLocation, IEnumerable<Vector2Int> ignore = null) {
-      return FindPathToNearestTargetLocation_AStar(gameState, mySnake, new Vector2Int[] { targetLocation }, ignore);
+   public static List<Vector2Int> FindPathToTargetLocation(GameState gameState, SnakeData mySnake, Vector2Int targetLocation, IEnumerable<Vector2Int> ignore = null) {
+      return FindPathToNearestTargetLocation(gameState, mySnake, new Vector2Int[] { targetLocation }, ignore);
    }
 
-   public static List<Vector2Int> FindPathToNearestTargetLocation_AStar(GameState gameState, SnakeData mySnake, IEnumerable<Vector2Int> targetLocations, IEnumerable<Vector2Int> ignore = null) {
+   public static List<Vector2Int> FindPathToNearestTargetLocation(GameState gameState, SnakeData mySnake, IEnumerable<Vector2Int> targetLocations, IEnumerable<Vector2Int> ignore = null) {
       return FindNearestPathFromPointToPoint(gameState, mySnake.Head, targetLocations, ignore);
    }
 
@@ -144,15 +144,38 @@ public static class BotUtilities {
       return Math.Abs(from.x - to.x) + Math.Abs(from.y - to.y);
    }
 
+   /// <summary>
+   /// Prüft, ob der Kopf einer Schlange in der Nähe des Spielfeldrandes ist. Der Abstand, der in Betracht gezogen wird,
+   /// kann mit dem Parameter "maxDistance" beeinflusst werden.
+   /// </summary>
+   /// <param name="gameState">Der derzeitige Game State</param>
+   /// <param name="targetSnake">Die Schlange, die geprüft werden soll</param>
+   /// <param name="maxDistance">Die Entfernung vom Spielfeldrand, die als "in der Nähe" gelten soll</param>
+   /// <returns>True, wenn der Kopf der Schlange höchstens so weit vom Spielfeldrand entfernt ist, wie in "maxDistance" angegeben
+   /// Ansonsten False</returns>
    public static bool IsSnakeNearABorder(GameState gameState, SnakeData targetSnake, int maxDistance = 1) {
       return IsLocationNearABorder(gameState, targetSnake.Head, maxDistance);
    }
 
+   /// <summary>
+   /// Prüft, ob eine Koordinate in der Nähe des Spielfeldrandes ist. Der Abstand, der in Betracht gezogen wird,
+   /// kann mit dem Parameter "maxDistance" beeinflusst werden.
+   /// </summary>
+   /// <param name="gameState">Der derzeitige Game State</param>
+   /// <param name="location">Die Koordinate, die geprüft werden soll</param>
+   /// <param name="maxDistance">Die Entfernung vom Spielfeldrand, die als "in der Nähe" gelten soll</param>
+   /// <returns>True, wenn die Koordinate höchstens so weit vom Spielfeldrand entfernt ist, wie in "maxDistance" angegeben
+   /// Ansonsten False</returns>
    public static bool IsLocationNearABorder(GameState gameState, Vector2Int location, int maxDistance = 1) {
       return location.x <= maxDistance || location.x >= gameState.GridSize.x - maxDistance - 1 ||
              location.y <= maxDistance || location.y >= gameState.GridSize.y - maxDistance - 1;
    }
 
+   /// <summary>
+   /// Gibt die Nachbarkoordinaten einer Koordinate zurück. Diagonale Nachbarn werden dabei nicht berücksichtigt.
+   /// </summary>
+   /// <param name="targetLocation">Die Koordinate, dessen Nachbarn gefunden werden sollen</param>
+   /// <returns>Ein Array von Koordinaten, die den Nachbarkoordinaten von "targetLocation" sind.</returns>
    public static Vector2Int[] GetAdjacentLocations(Vector2Int targetLocation) {
       List<Vector2Int> adjLocations = new List<Vector2Int>();
       foreach (Vector2Int loc in DirectionChange.Values) {

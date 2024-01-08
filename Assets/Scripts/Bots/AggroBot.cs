@@ -41,7 +41,7 @@ public class AggroBot : SnakeBot {
          //if(CanCutOffEnemy(gameState, mySnake, otherSnake)) {
          //   return mySnake.Direction;
          //}
-         path = BotUtilities.FindPathToTargetFood_AStar(gameState, mySnake, gameState.FindNearestFood(mySnake));
+         path = BotUtilities.FindPathToTargetFood(gameState, mySnake, gameState.FindNearestFood(mySnake));
          //Speichere den Pfad, um ihn anzeigen lassen zu können
          mySnake.DebugData = path.ToArray();
          if (path.Count > 0) {
@@ -81,7 +81,7 @@ public class AggroBot : SnakeBot {
    private SnakeDirection PlayDefensively(GameState gameState, SnakeData mySnake, SnakeData otherSnake) {
       List<Vector2Int> path = null;
       //Finde einen Pfad zur nächsten Futterkoordinate
-      path = BotUtilities.FindPathToNearestFood_AStar(gameState, mySnake);
+      path = BotUtilities.FindPathToNearestFood(gameState, mySnake);
 
       //Speichere den Pfad, um ihn anzeigen lassen zu können
       mySnake.DebugData = path.ToArray();
@@ -115,7 +115,7 @@ public class AggroBot : SnakeBot {
          SnakeData tmpSnake = tmpState.FindMySnake(mySnake.Owner);
          tmpSnake.Move();
       }
-      var tmpPath = BotUtilities.FindPathToNearestFood_AStar(tmpState, tmpState.FindMySnake(mySnake.Owner));
+      var tmpPath = BotUtilities.FindPathToNearestFood(tmpState, tmpState.FindMySnake(mySnake.Owner));
 
       return tmpPath == null || tmpPath.Count <= 0;
    }
