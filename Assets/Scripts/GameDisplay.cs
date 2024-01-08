@@ -52,8 +52,16 @@ public class GameDisplay : MonoBehaviour {
       }
       List<string> botNames = new List<string>(Simulator.BotTypes.Select(x => x.Name));
 
-      SnakeBotSelects[0].onValueChanged.AddListener((i) => { Simulator.Bot1 = Simulator.BotTypes.First(x => x.Name == SnakeBotSelects[0].options[i].text); SaveDropdownState(); });
-      SnakeBotSelects[1].onValueChanged.AddListener((i) => { Simulator.Bot2 = Simulator.BotTypes.First(x => x.Name == SnakeBotSelects[1].options[i].text); SaveDropdownState(); });
+      SnakeBotSelects[0].onValueChanged.AddListener((i) => {
+         Simulator.Bot1 = Simulator.BotTypes.First(x => x.Name == SnakeBotSelects[0].options[i].text);
+         SaveDropdownState();
+         Bot1Graph.Label = string.Format("Bot 1 ({0})", Simulator.Bot1.Name);
+      });
+      SnakeBotSelects[1].onValueChanged.AddListener((i) => {
+         Simulator.Bot2 = Simulator.BotTypes.First(x => x.Name == SnakeBotSelects[1].options[i].text);
+         SaveDropdownState();
+         Bot2Graph.Label = string.Format("Bot 2 ({0})", Simulator.Bot2.Name);
+      });
       string[] saved = null;
       if (System.IO.File.Exists("UserSettings\\botselect.txt")) {
          saved = System.IO.File.ReadAllLines("UserSettings\\botselect.txt");
@@ -76,6 +84,8 @@ public class GameDisplay : MonoBehaviour {
          select.value = index;
          select.onValueChanged.Invoke(index);
       }
+
+      DrawGraph.Label = "Draw %";
    }
 
    void Update() {
@@ -187,9 +197,9 @@ public class GameDisplay : MonoBehaviour {
    private void drawGraph(int bot1Wins, int bot2Wins, int draws, int total) {
       if (Simulator.GamesToSimulate == 0 || total == 0)
          return;
-      Bot1Graph?.AddDataPoint(bot1Wins / (float)total);
-      Bot2Graph?.AddDataPoint(bot2Wins / (float)total);
-      DrawGraph?.AddDataPoint(draws / (float)total);
+      Bot1Graph.AddDataPoint(bot1Wins / (float)total);
+      Bot2Graph.AddDataPoint(bot2Wins / (float)total);
+      DrawGraph.AddDataPoint(draws / (float)total);
    }
 
    private void aggregateAndDisplayStatus() {
