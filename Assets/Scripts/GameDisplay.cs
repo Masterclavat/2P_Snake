@@ -35,6 +35,7 @@ public class GameDisplay : MonoBehaviour {
    bool advanceSingleTick = false;
    private StringBuilder statusSB = new StringBuilder();
    private int lastNumberOfCompletedGames = 0;
+   private float lastSimulationStarted = 0f;
 
    void Start() {
       Vector2Int gridSize = Simulator.GridSize;
@@ -109,9 +110,6 @@ public class GameDisplay : MonoBehaviour {
             ReplayCurrentGame();
          }
       }
-      //if (Input.GetKeyDown(KeyCode.Space)) {
-      //   Paused = !Paused;
-      //}
       else if (Input.GetKeyDown(KeyCode.D)) {
          if (Game != null && currentMemoryIndex < Game.Memory.Count) {
             advanceSingleTick = true;
@@ -122,6 +120,10 @@ public class GameDisplay : MonoBehaviour {
             currentMemoryIndex -= 2;
             advanceSingleTick = true;
          }
+      }
+      if(lastSimulationStarted != Simulator.SimulationStarted) {
+         lastSimulationStarted = Simulator.SimulationStarted;
+         currentGameIndex = -1;
       }
 
       ReplayControlGroup.SetActive(!Simulator.Games.IsEmpty && Simulator.Games.First().Memory.Count > 0);
@@ -342,7 +344,7 @@ public class GameDisplay : MonoBehaviour {
 
    public void ReplayCurrentGame() {
       GameLogic[] games = Simulator.Games.ToArray();
-      if (currentGameIndex > 0) {
+      if (currentGameIndex >= 0) {
          Game = games[currentGameIndex];
          lastTick = 0f;
          currentMemoryIndex = 0;

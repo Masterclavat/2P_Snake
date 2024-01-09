@@ -38,15 +38,6 @@ public class GameSim : MonoBehaviour {
    }
 
    private void Update() {
-      //if (Input.GetKeyDown(KeyCode.F9)) {
-      //   StartCoroutine(SimulateGames());
-      //}
-      //else if (Input.GetKeyDown(KeyCode.F10)) {
-      //   SimulateGames_Async();
-      //}
-      //else if (Input.GetKeyDown(KeyCode.F11)) {
-      //   SimulateGames_Threaded();
-      //}
       if (Input.GetKeyDown(KeyCode.F12)) {
          print(Bot1.Name);
          print(Bot2.Name);

@@ -17,12 +17,13 @@ public class PauseButton : MonoBehaviour {
    }
 
    private void Start() {
-      pauseButton.onClick.AddListener(() => { Display.Paused = !Display.Paused; text.text = Display.Paused ? PlayIcon : PauseIcon; });
+      pauseButton.onClick.AddListener(() => Display.Paused = !Display.Paused);
    }
 
    private void Update() {
       if (Input.GetKeyDown(KeyCode.Space)) {
          pauseButton.onClick.Invoke();
       }
+      text.text = Display.Paused ? PlayIcon : PauseIcon;
    }
 }
