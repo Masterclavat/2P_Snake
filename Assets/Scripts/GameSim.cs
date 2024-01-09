@@ -17,15 +17,15 @@ public class GameSim : MonoBehaviour {
    public int MaxThreads = 6;
    public string BotDirectory = "Assets\\Scripts\\Bots";
    public int GamesToSimulate { get => gamesToSimulate; set => gamesToSimulate = value; }
-   public bool SaveHistory { get; private set; }
+   public bool SaveHistory { get => saveHistory; set => saveHistory = value; }
    public List<Type> BotTypes = new List<Type>();
    public Type Bot1 { get; set; }
    public Type Bot2 { get; set; }
 
    private int gamesToSimulate = 1000;
+   private bool saveHistory;
 
    private void Start() {
-      SaveHistory = false;
       if (Directory.Exists(BotDirectory)) {
          foreach (string filePath in Directory.EnumerateFiles(BotDirectory, "*.cs")) {
             string fileName = Path.GetFileNameWithoutExtension(filePath);
@@ -38,15 +38,15 @@ public class GameSim : MonoBehaviour {
    }
 
    private void Update() {
-      if (Input.GetKeyDown(KeyCode.F9)) {
-         StartCoroutine(SimulateGames());
-      }
-      else if (Input.GetKeyDown(KeyCode.F10)) {
-         SimulateGames_Async();
-      }
-      else if (Input.GetKeyDown(KeyCode.F11)) {
-         SimulateGames_Threaded();
-      }
+      //if (Input.GetKeyDown(KeyCode.F9)) {
+      //   StartCoroutine(SimulateGames());
+      //}
+      //else if (Input.GetKeyDown(KeyCode.F10)) {
+      //   SimulateGames_Async();
+      //}
+      //else if (Input.GetKeyDown(KeyCode.F11)) {
+      //   SimulateGames_Threaded();
+      //}
       if (Input.GetKeyDown(KeyCode.F12)) {
          print(Bot1.Name);
          print(Bot2.Name);
@@ -72,7 +72,7 @@ public class GameSim : MonoBehaviour {
       Type tBot1 = Bot1;
       Type tBot2 = Bot2;
       for (int i = 0; i < numberOfGames; i++) {
-         await Task.Run(()=> StartGame(tBot1, tBot2));
+         await Task.Run(() => StartGame(tBot1, tBot2));
       }
       SimulationEnded = Time.time;
    }
