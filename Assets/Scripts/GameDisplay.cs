@@ -31,7 +31,7 @@ public class GameDisplay : MonoBehaviour {
    private int currentMemoryIndex = 0;
    private int currentGameIndex = -1;
    private float lastTick = 0f;
-   private bool paused = false;
+   public bool Paused;
    bool advanceSingleTick = false;
    private StringBuilder statusSB = new StringBuilder();
    private int lastNumberOfCompletedGames = 0;
@@ -109,9 +109,9 @@ public class GameDisplay : MonoBehaviour {
             ReplayCurrentGame();
          }
       }
-      if (Input.GetKeyDown(KeyCode.Space)) {
-         paused = !paused;
-      }
+      //if (Input.GetKeyDown(KeyCode.Space)) {
+      //   Paused = !Paused;
+      //}
       else if (Input.GetKeyDown(KeyCode.D)) {
          if (Game != null && currentMemoryIndex < Game.Memory.Count) {
             advanceSingleTick = true;
@@ -127,11 +127,11 @@ public class GameDisplay : MonoBehaviour {
       ReplayControlGroup.SetActive(!Simulator.Games.IsEmpty && Simulator.Games.First().Memory.Count > 0);
       if (Game == null)
          return;
-      if (!advanceSingleTick && (Time.time - lastTick < GameTickRate || paused))
+      if (!advanceSingleTick && (Time.time - lastTick < GameTickRate || Paused))
          return;
       if (currentMemoryIndex >= Game.Memory.Count) {
          currentMemoryIndex = Game.Memory.Count - 1;
-         paused = true;
+         Paused = true;
       }
       else if (currentMemoryIndex < 0)
          currentMemoryIndex = 0;
@@ -281,7 +281,7 @@ public class GameDisplay : MonoBehaviour {
       Game = Simulator.Games.ToArray()[++currentGameIndex];
       lastTick = 0f;
       currentMemoryIndex = 0;
-      paused = false;
+      Paused = false;
    }
 
    public void ShowNextGame_WinnerSnake_1() {
@@ -292,7 +292,7 @@ public class GameDisplay : MonoBehaviour {
             currentGameIndex = i;
             currentMemoryIndex = 0;
             lastTick = 0f;
-            paused = false;
+            Paused = false;
             return;
          }
       }
@@ -306,7 +306,7 @@ public class GameDisplay : MonoBehaviour {
             currentGameIndex = i;
             currentMemoryIndex = 0;
             lastTick = 0f;
-            paused = false;
+            Paused = false;
             return;
          }
       }
@@ -320,7 +320,7 @@ public class GameDisplay : MonoBehaviour {
             currentGameIndex = i;
             currentMemoryIndex = 0;
             lastTick = 0f;
-            paused = false;
+            Paused = false;
             return;
          }
       }
@@ -334,7 +334,7 @@ public class GameDisplay : MonoBehaviour {
             currentGameIndex = i;
             currentMemoryIndex = 0;
             lastTick = 0f;
-            paused = false;
+            Paused = false;
             return;
          }
       }
@@ -346,7 +346,7 @@ public class GameDisplay : MonoBehaviour {
          Game = games[currentGameIndex];
          lastTick = 0f;
          currentMemoryIndex = 0;
-         paused = false;
+         Paused = false;
       }
    }
 }
