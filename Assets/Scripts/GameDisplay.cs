@@ -24,6 +24,7 @@ public class GameDisplay : MonoBehaviour {
    public PercentageGraph Bot2Graph;
    public PercentageGraph DrawGraph;
    public GameObject GraphPanel;
+   public GameObject ReplayControlGroup;
    public Toggle GraphEnableCheckbox;
 
    [SerializeField]
@@ -123,6 +124,8 @@ public class GameDisplay : MonoBehaviour {
             advanceSingleTick = true;
          }
       }
+
+      ReplayControlGroup.SetActive(!Simulator.Games.IsEmpty && Simulator.Games.First().Memory.Count > 0);
       if (Game == null)
          return;
       if (!advanceSingleTick && (Time.time - lastTick < GameTickRate || paused))
@@ -275,14 +278,14 @@ public class GameDisplay : MonoBehaviour {
       System.IO.File.WriteAllText("UserSettings\\botselect.txt", text);
    }
 
-   private void ShowNextGame() {
+   public void ShowNextGame() {
       Game = Simulator.Games.ToArray()[++currentGameIndex];
       lastTick = 0f;
       currentMemoryIndex = 0;
       paused = false;
    }
 
-   private void ShowNextGame_WinnerSnake_1() {
+   public void ShowNextGame_WinnerSnake_1() {
       GameLogic[] games = Simulator.Games.ToArray();
       for (int i = currentGameIndex + 1; i < Simulator.Games.Count; i++) {
          if (games[i].Winner == games[i].CurrentGameState.Snake_1) {
@@ -296,7 +299,7 @@ public class GameDisplay : MonoBehaviour {
       }
    }
 
-   private void ShowNextGame_WinnerSnake_2() {
+   public void ShowNextGame_WinnerSnake_2() {
       GameLogic[] games = Simulator.Games.ToArray();
       for (int i = currentGameIndex + 1; i < games.Length; i++) {
          if (games[i].Winner == games[i].CurrentGameState.Snake_2) {
@@ -310,7 +313,7 @@ public class GameDisplay : MonoBehaviour {
       }
    }
 
-   private void ShowNextGame_Draw() {
+   public void ShowNextGame_Draw() {
       GameLogic[] games = Simulator.Games.ToArray();
       for (int i = currentGameIndex + 1; i < Simulator.Games.Count; i++) {
          if (games[i].Winner == null) {
@@ -324,7 +327,7 @@ public class GameDisplay : MonoBehaviour {
       }
    }
 
-   private void ShowNextGame_TickLimit() {
+   public void ShowNextGame_TickLimit() {
       GameLogic[] games = Simulator.Games.ToArray();
       for (int i = currentGameIndex + 1; i < Simulator.Games.Count; i++) {
          if (games[i].Ticks >= games[i].MaxTicks) {
@@ -338,7 +341,7 @@ public class GameDisplay : MonoBehaviour {
       }
    }
 
-   private void ReplayCurrentGame() {
+   public void ReplayCurrentGame() {
       GameLogic[] games = Simulator.Games.ToArray();
       if (currentGameIndex > 0) {
          Game = games[currentGameIndex];
