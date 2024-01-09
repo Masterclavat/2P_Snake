@@ -39,13 +39,13 @@ public class GameSim : MonoBehaviour {
 
    private void Update() {
       if (Input.GetKeyDown(KeyCode.F9)) {
-         StartCoroutine(SimulateGames(GamesToSimulate));
+         StartCoroutine(SimulateGames());
       }
       else if (Input.GetKeyDown(KeyCode.F10)) {
-         SimulateGames_Async(GamesToSimulate);
+         SimulateGames_Async();
       }
       else if (Input.GetKeyDown(KeyCode.F11)) {
-         SimulateGames_Threaded(GamesToSimulate);
+         SimulateGames_Threaded();
       }
       if (Input.GetKeyDown(KeyCode.F12)) {
          print(Bot1.Name);
@@ -53,9 +53,8 @@ public class GameSim : MonoBehaviour {
       }
    }
 
-   private IEnumerator SimulateGames(int numberOfGames) {
+   public IEnumerator SimulateGames() {
       SimulationStarted = Time.time;
-      gamesToSimulate = numberOfGames;
       ClearGamesQueue();
       Type tBot1 = Bot1;
       Type tBot2 = Bot2;
@@ -66,9 +65,9 @@ public class GameSim : MonoBehaviour {
       SimulationEnded = Time.time;
    }
 
-   private async void SimulateGames_Async(int numberOfGames) {
+   public async void SimulateGames_Async() {
       SimulationStarted = Time.time;
-      gamesToSimulate = numberOfGames;
+      int numberOfGames = gamesToSimulate;
       ClearGamesQueue();
       Type tBot1 = Bot1;
       Type tBot2 = Bot2;
@@ -78,9 +77,9 @@ public class GameSim : MonoBehaviour {
       SimulationEnded = Time.time;
    }
 
-   private async void SimulateGames_Threaded(int numberOfGames) {
+   public async void SimulateGames_Threaded() {
       SimulationStarted = Time.time;
-      gamesToSimulate = numberOfGames;
+      int numberOfGames = gamesToSimulate;
       ClearGamesQueue();
       Type tBot1 = Bot1;
       Type tBot2 = Bot2;
