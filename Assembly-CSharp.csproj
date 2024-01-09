@@ -62,6 +62,7 @@
     <Compile Include="Assets\Scripts\Bots\AggroBot.cs" />
     <Compile Include="Assets\Scripts\NumberOfGamesInput.cs" />
     <Compile Include="Assets\Scripts\SnakeDirection.cs" />
+    <Compile Include="Assets\Scripts\SaveHistoryToggler.cs" />
     <Compile Include="Assets\Scripts\BotUtilities.cs" />
     <Compile Include="Assets\Scripts\GameLogic.cs" />
     <Compile Include="Assets\Scripts\PercentageGraph.cs" />
@@ -70,7 +71,7 @@
     <Compile Include="Assets\Scripts\GameState.cs" />
     <Compile Include="Assets\Scripts\GameDisplay.cs" />
     <Compile Include="Assets\Scripts\SnakeData.cs" />
-    <Compile Include="Assets\Scripts\SaveHistoryToggler.cs" />
+    <Compile Include="Assets\Scripts\TickSpeedSlider.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />

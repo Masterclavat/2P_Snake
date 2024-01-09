@@ -27,8 +27,7 @@ public class GameDisplay : MonoBehaviour {
    public GameObject ReplayControlGroup;
    public Toggle GraphEnableCheckbox;
 
-   [SerializeField]
-   private float GameTickRate = 0.1f;
+   public float GameTickRate = 0.1f;
    private int currentMemoryIndex = 0;
    private int currentGameIndex = -1;
    private float lastTick = 0f;
