@@ -261,9 +261,9 @@ public class GameDisplay : MonoBehaviour {
             drawGraph(snake1Win, snake2Win, draw, gamesFinished);
          }
          else if (lastNumberOfCompletedGames > gamesFinished) {
-            Bot1Graph?.ClearDataPoints();
-            Bot2Graph?.ClearDataPoints();
-            DrawGraph?.ClearDataPoints();
+            Bot1Graph.ClearDataPoints();
+            Bot2Graph.ClearDataPoints();
+            DrawGraph.ClearDataPoints();
          }
          lastNumberOfCompletedGames = gamesFinished;
       }
