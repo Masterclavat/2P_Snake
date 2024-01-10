@@ -90,38 +90,13 @@ public class GameDisplay : MonoBehaviour {
    }
 
    void Update() {
-      if (Simulator.Games.Count > 0) {
-         if (Input.GetKeyDown(KeyCode.F1)) {
-            ShowNextGame();
-         }
-         else if (Input.GetKeyDown(KeyCode.F2)) {
-            ShowNextGame_WinnerSnake_1();
-         }
-         else if (Input.GetKeyDown(KeyCode.F3)) {
-            ShowNextGame_WinnerSnake_2();
-         }
-         else if (Input.GetKeyDown(KeyCode.F4)) {
-            ShowNextGame_Draw();
-         }
-         else if (Input.GetKeyDown(KeyCode.F5)) {
-            ShowNextGame_TickLimit();
-         }
-         else if (Input.GetKeyDown(KeyCode.F6)) {
-            ReplayCurrentGame();
-         }
-      }
-      else if (Input.GetKeyDown(KeyCode.D)) {
-         if (Game != null && currentMemoryIndex < Game.Memory.Count) {
-            advanceSingleTick = true;
-         }
+      if (Input.GetKeyDown(KeyCode.D)) {
+         SingleTickAdvance();
       }
       else if (Input.GetKeyDown(KeyCode.A)) {
-         if (Game != null && currentMemoryIndex > 0) {
-            currentMemoryIndex -= 2;
-            advanceSingleTick = true;
-         }
+         SingleTickBack();
       }
-      if(lastSimulationStarted != Simulator.SimulationStarted) {
+      if (lastSimulationStarted != Simulator.SimulationStarted) {
          lastSimulationStarted = Simulator.SimulationStarted;
          currentGameIndex = -1;
       }
@@ -196,6 +171,21 @@ public class GameDisplay : MonoBehaviour {
       aggregateAndDisplayStatus();
       if (GraphPanel != null)
          GraphPanel.SetActive(GraphEnableCheckbox.isOn && Simulator.SimulationEnded == 0f && Simulator.SimulationStarted > 0f);
+   }
+
+   public void SingleTickAdvance() {
+      if (Game != null && currentMemoryIndex < Game.Memory.Count) {
+         advanceSingleTick = true;
+         Paused = true;
+      }
+   }
+
+   public void SingleTickBack() {
+      if (Game != null && currentMemoryIndex > 0) {
+         currentMemoryIndex -= 2;
+         advanceSingleTick = true;
+         Paused = true;
+      }
    }
 
    private void drawGraph(int bot1Wins, int bot2Wins, int draws, int total) {
