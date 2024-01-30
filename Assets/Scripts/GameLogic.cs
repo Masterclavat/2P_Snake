@@ -3,6 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Die Repräsentation einer einzelnen Spielrunde
+/// </summary>
 public class GameLogic {
 
    public GameState CurrentGameState;
@@ -10,8 +13,10 @@ public class GameLogic {
    public int MaxFood { get => maxFood; }
    public Vector2Int GridSize { get => gameGridSize; }
    public SnakeData Winner { get; private set; }
-   public string WinnerName { 
-      get {
+   public string WinnerName
+   {
+      get
+      {
          if (Winner == null)
             return "Draw";
          else if (Winner == CurrentGameState.Snake_1)
@@ -20,7 +25,7 @@ public class GameLogic {
             return "Snake 2";
          else
             return "Unknown";
-      } 
+      }
    }
    public List<GameState> Memory = new List<GameState>();
    public int Ticks { get; private set; }
@@ -51,6 +56,10 @@ public class GameLogic {
    }
    public GameLogic(Vector2Int gridSize, SnakeBot bot1, SnakeBot bot2, bool withMemory = true) : this(gridSize, bot1, bot2, Guid.NewGuid().GetHashCode(), withMemory) { }
 
+   /// <summary>
+   /// Setzt die Startpositionen beider Schlangen auf eine zufällige Koordinate in zufälligen Quadranten.
+   /// Die Schlangen spawnen immer in unterschiedlichen Quadranten.
+   /// </summary>
    private void SetStartingPositions() {
       //Wähle 2 unterschiedliche, zufällige Quadranten aus
       List<int> quadrants = new List<int>(4) { 0, 1, 2, 3 };
@@ -78,6 +87,11 @@ public class GameLogic {
       CurrentGameState.Snake_2.Segments.Add(snake2StartPos + BotUtilities.DirectionChange[CurrentGameState.Snake_2.Direction] * 2);
    }
 
+   /// <summary>
+   /// Berechnet eine zufällige Koordinate in einem bestimmten Quadranten
+   /// </summary>
+   /// <param name="quadrant">Der Quadrant, in dem die zufällige Koordinate liegen soll</param>
+   /// <returns>Eine zufällige Koordinate aus dem Quadranten in <paramref name="quadrant"/></returns>
    private Vector2Int getRandomPositionInQuadrant(int quadrant) {
       //Die Quadranten sind die folgenden:
       //|1|2|
@@ -93,9 +107,17 @@ public class GameLogic {
             return new Vector2Int(rand.Next(gameGridSize.x / 2 + 3, gameGridSize.x - 3), rand.Next(3, gameGridSize.y / 2 - 3));
       }
 
-      throw new ArgumentException("Quadrant must be between 0 and 3","quadrant");
+      throw new ArgumentException("Quadrant must be between 0 and 3", "quadrant");
    }
 
+   /// <summary>
+   /// Das Herzstück der GameLogic, führt einen Tick aus.
+   /// Ein Tick besteht aus der Abfrage der nächsten Aktion beider Bots,
+   /// der Überprüfung, ob dadurch das Spiel endet.
+   /// Wenn nicht, bewegt beider Schlangen in ihre jeweils gewählten Richtungen.
+   /// Dann werden neue Futterkoordinaten festgelegt, falls es weniger als die maximale Anzahl sind und
+   /// speichert den derzeitigen GameState in der Replay-History.
+   /// </summary>
    public void NextTick() {
       SnakeDirection prefDirection = CurrentGameState.Snake_1.Owner.Tick(CurrentGameState, CurrentGameState.Snake_1, CurrentGameState.Snake_2);
       CurrentGameState.Snake_1.Direction = isDirectionChangeAllowed(CurrentGameState.Snake_1.Direction, prefDirection) ?
@@ -122,9 +144,10 @@ public class GameLogic {
       CurrentGameState.Snake_1.Move();
       CurrentGameState.Snake_2.Move();
       if (Ticks >= maxTicks) {
-         if (CurrentGameState.Snake_1.Segments.Count <  CurrentGameState.Snake_2.Segments.Count) {
+         if (CurrentGameState.Snake_1.Segments.Count < CurrentGameState.Snake_2.Segments.Count) {
             SnakeDied(CurrentGameState.Snake_1);
-         }else if(CurrentGameState.Snake_2.Segments.Count < CurrentGameState.Snake_1.Segments.Count) {
+         }
+         else if (CurrentGameState.Snake_2.Segments.Count < CurrentGameState.Snake_1.Segments.Count) {
             SnakeDied(CurrentGameState.Snake_2);
          }
          else {
@@ -150,6 +173,9 @@ public class GameLogic {
       Ticks++;
    }
 
+   /// <summary>
+   /// Legt eine zufällige freie Koordinate als Futterkoordinate fest
+   /// </summary>
    private void SpawnFood() {
       List<Vector2Int> allSegments = new List<Vector2Int>();
       foreach (var seg in CurrentGameState.Snake_1.Segments) {
@@ -171,6 +197,11 @@ public class GameLogic {
       }
    }
 
+   /// <summary>
+   /// Wird aufgerufen, wenn eine Schlange stirbt und legt als Gewinner dieser Runde die gegnerische Schlange fest.
+   /// Wenn die gegnerische Schlange im selben Tick auch gestorben ist, legt das Ergebnis dieser Runde auf unentschieden fest.
+   /// </summary>
+   /// <param name="snake">Die Schlange, die stirbt</param>
    private void SnakeDied(SnakeData snake) {
       snake.IsAlive = false;
       CurrentGameState.IsGameInProgress = false;
@@ -187,10 +218,17 @@ public class GameLogic {
       }
    }
 
+   /// <summary>
+   /// Prüft, ob der Kopf der in <paramref name="snake"/> angegebenen Schlange auf einer Futterkoordinate liegt
+   /// und gibt das Ergebnis zurück.
+   /// </summary>
+   /// <param name="snake">Die Schlange, dessen Kopf überprüft werden soll</param>
+   /// <param name="foodEaten">Wenn das Ergebnis der Funktion true ist, liegt in diesem Parameter die Futterkoordinate</param>
+   /// <returns>Gibt <c>true</c> zurück, wenn der Kopf der Schlange auf einer Futterkoordinate liegt,
+   /// andernfalls <c>false</c>.</returns>
    private bool checkSnakeEatsFood(SnakeData snake, out Vector2Int foodEaten) {
-      Vector2Int firstSegment = snake.Head;
       foreach (var food in CurrentGameState.FoodLocations) {
-         if (food == firstSegment) {
+         if (food == snake.Head) {
             snake.Segments.Insert(0, new Vector2Int(food.x, food.y));
             foodEaten = food;
             return true;
@@ -200,6 +238,13 @@ public class GameLogic {
       return false;
    }
 
+   /// <summary>
+   /// Prüft, ob ein Richtungswechsel erlaubt ist.
+   /// </summary>
+   /// <param name="current">Die derzeitige Richtung</param>
+   /// <param name="next">Die Richtung, in die gewechselt werden soll</param>
+   /// <returns>Gibt <c>false</c> zurück, wenn <paramref name="next"/> genau die gegenüberliegende Richtung von 
+   /// <paramref name="current"/> ist. Andernfalls gibt <c>true</c> zurück. </returns>
    private bool isDirectionChangeAllowed(SnakeDirection current, SnakeDirection next) {
       if (current == SnakeDirection.Down && next == SnakeDirection.Up)
          return false;

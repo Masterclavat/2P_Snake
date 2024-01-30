@@ -3,6 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Die Repräsentation einer Schlange
+/// </summary>
 public class SnakeData : ICloneable {
    public Color Color;
    public List<Vector2Int> Segments = new List<Vector2Int>();
@@ -48,6 +51,9 @@ public class SnakeData : ICloneable {
       IsAlive = true;
    }
 
+   /// <summary>
+   /// Bewegt die Schlange in die derzeitige Richtung in <c>Direction</c>.
+   /// </summary>
    public void Move() {
       if (!IsAlive)
          return;

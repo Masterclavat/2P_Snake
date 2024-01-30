@@ -44,6 +44,11 @@ public class GameSim : MonoBehaviour {
       }
    }
 
+   /// <summary>
+   /// Simuliert Spiele unter der Verwendung von Unity-Coroutines. Dies ist eine Single-Thread Funktion (langsam).
+   /// Sollte nur zum Debuggen verwendet werden!
+   /// </summary>
+   /// <returns></returns>
    public IEnumerator SimulateGames() {
       SimulationStarted = Time.time;
       ClearGamesQueue();
@@ -56,6 +61,10 @@ public class GameSim : MonoBehaviour {
       SimulationEnded = Time.time;
    }
 
+   /// <summary>
+   /// Simuliert Spiele unter der Verwendung von C# Async. Dies ist eine Single-Thread Funktion (langsam).
+   /// Sollte nur zum Debuggen verwendet werden!
+   /// </summary>
    public async void SimulateGames_Async() {
       SimulationStarted = Time.time;
       int numberOfGames = gamesToSimulate;
@@ -68,6 +77,10 @@ public class GameSim : MonoBehaviour {
       SimulationEnded = Time.time;
    }
 
+   /// <summary>
+   /// Simuliert Spiele unter der Verwendung von Hintergrund-Threads. Dies ist eine Multi-Thread Funktion
+   /// und ist daher viel schneller auf Prozessoren, die viele Threads besitzen.
+   /// </summary>
    public async void SimulateGames_Threaded() {
       SimulationStarted = Time.time;
       int numberOfGames = gamesToSimulate;
@@ -112,6 +125,11 @@ public class GameSim : MonoBehaviour {
       SimulationEnded = Time.time;
    }
 
+   /// <summary>
+   /// Simuliert ein Spiel, bis es endet.
+   /// </summary>
+   /// <param name="tBot1">Der Typ des ersten Bots</param>
+   /// <param name="tBot2">Der Typ des zweiten Bots</param>
    private void StartGame(Type tBot1, Type tBot2) {
       if (tBot1 == null || tBot2 == null)
          return;
@@ -124,11 +142,12 @@ public class GameSim : MonoBehaviour {
       }
    }
 
+   /// <summary>
+   /// Leert die ConcurrentQueue der bereits simulierten Spiele
+   /// </summary>
    private void ClearGamesQueue() {
       while (Games.Count > 0) {
-         if (Games.TryDequeue(out GameLogic item)) {
-
-         }
+         if (Games.TryDequeue(out GameLogic item)) { }
       }
    }
 

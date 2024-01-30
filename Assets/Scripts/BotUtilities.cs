@@ -20,7 +20,7 @@ public static class BotUtilities {
       {SnakeDirection.Right,  new Vector2Int(1, 0)}};
 
    /// <summary>
-   /// Berechnet den schnellsten Weg zur nächsten Futterkoordinate. Dafür wird der A* Algorithmus verwendet.
+   /// Berechnet den schnellsten Weg vom Kopf einer Schlange zur nächsten Futterkoordinate. Dafür wird der A* Algorithmus verwendet.
    /// </summary>
    /// <param name="gameState">Der derzeitige Game State</param>
    /// <param name="mySnake">Die Schlange, aus dessen Sicht der Weg berechnet wird</param>
@@ -28,7 +28,8 @@ public static class BotUtilities {
    /// bei der Pfadsuche ignoriert und sich auf die anderen Futterkoordinaten konzentriert.
    /// Wenn dieser Parameter null ist, werden alle Futterkoordinaten in betracht gezogen.</param>
    /// <returns>Gibt eine Liste von Koordinaten zurück, die den Weg beschreiben. Startet vom Kopf der Schlange
-   /// und führt bis zum nächsten Futter.</returns>
+   /// und führt bis zum nächsten Futter.
+   /// Wenn es keinen gültigen Weg gibt, wird eine leere Liste zurückgegeben</returns>
    public static List<Vector2Int> FindPathToNearestFood(GameState gameState, SnakeData mySnake, IEnumerable<Vector2Int> ignoreFood = null) {
       List<Vector2Int> validFoodTargets = new List<Vector2Int>();
       if (ignoreFood != null) {
@@ -45,6 +46,15 @@ public static class BotUtilities {
       return FindPathToNearestTargetLocation(gameState, mySnake, validFoodTargets);
    }
 
+   /// <summary>
+   /// Berechnet den schnellsten Weg vom Kopf einer Schlange zu einer bestimmten Futterkoordinate. Dazu wird der A* Algorithmus verwendet.
+   /// </summary>
+   /// <param name="gameState">Der derzeitige Game State</param>
+   /// <param name="mySnake">Die Schlange, aus dessen Sicht der Weg berechnet wird</param>
+   /// <param name="targetFood">Die Futterkoordinate, zu der der schnellste Weg berechnet werden soll</param>
+   /// <returns>Gibt eine Liste von Koordinaten zurück, die den Weg beschreiben. Startet vom Kopf der Schlange
+   /// und führt bis zur Koordinate in targetFood.
+   /// Wenn es keinen gültigen Weg gibt, wird eine leere Liste zurückgegeben</returns>
    public static List<Vector2Int> FindPathToTargetFood(GameState gameState, SnakeData mySnake, Vector2Int targetFood) {
       List<Vector2Int> ignoreFood = new List<Vector2Int>();
       foreach (Vector2Int foodLoc in gameState.FoodLocations) {
@@ -55,14 +65,47 @@ public static class BotUtilities {
       return FindPathToNearestFood(gameState, mySnake, ignoreFood);
    }
 
+   /// <summary>
+   /// Berechnet den schnellsten Weg vom Kopf einer Schlange zu einer bestimmten Koordinate.  Dazu wird der A* Algorithmus verwendet.
+   /// </summary>
+   /// <param name="gameState">Der derzeitige Game State</param>
+   /// <param name="mySnake">Die Schlange, aus dessen Sicht der Weg berechnet wird</param>
+   /// <param name="targetLocation">Die Koordinate, zu der der schnellste Weg berechnet werden soll</param>
+   /// <param name="ignore">Eine Auflistung von Koordinaten, die nicht Teil des Wegs sein dürfen.
+   /// Wenn dieser Parameter null ist, gibt es keine Restriktionen.</param>
+   /// <returns>Gibt eine Liste von Koordinaten zurück, die den Weg beschreiben. Startet vom Kopf der Schlange
+   /// und führt bis zur Koordinate in targetLocation.
+   /// Wenn es keinen gültigen Weg gibt, wird eine leere Liste zurückgegeben</returns>
    public static List<Vector2Int> FindPathToTargetLocation(GameState gameState, SnakeData mySnake, Vector2Int targetLocation, IEnumerable<Vector2Int> ignore = null) {
       return FindPathToNearestTargetLocation(gameState, mySnake, new Vector2Int[] { targetLocation }, ignore);
    }
 
+   /// <summary>
+   /// Berechnet den schnellsten Weg vom Kopf einer Schlange zu einer bestimmten Koordinate. Dazu wird der A* Algorithmus verwendet.
+   /// </summary>
+   /// <param name="gameState">Der derzeitige Game State</param>
+   /// <param name="mySnake">Die Schlange, aus dessen Sicht der Weg berechnet wird</param>
+   /// <param name="targetLocations">Eine Auflistung von Koordinaten, zu denen der schnellste Weg berechnet werden soll</param>
+   /// <param name="ignore">Eine Auflistung von Koordinaten, die nicht Teil des Wegs sein dürfen.
+   /// Wenn dieser Parameter null ist, gibt es keine Restriktionen.</param>
+   /// <returns>Gibt eine Liste von Koordinaten zurück, die den Weg beschreiben. Startet vom Kopf der Schlange
+   /// und führt bis zur nächsten Koordinate in targetLocations.
+   /// Wenn es keinen gültigen Weg gibt, wird eine leere Liste zurückgegeben</returns>
    public static List<Vector2Int> FindPathToNearestTargetLocation(GameState gameState, SnakeData mySnake, IEnumerable<Vector2Int> targetLocations, IEnumerable<Vector2Int> ignore = null) {
       return FindNearestPathFromPointToPoint(gameState, mySnake.Head, targetLocations, ignore);
    }
 
+   /// <summary>
+   /// Berechnet den schnellsten Weg von einer bestimmten Koordinate zu einer anderen Koordinate. Dazu wird der A* Algorithmus verwendet.
+   /// </summary>
+   /// <param name="gameState">Der derzeitige Game State</param>
+   /// <param name="startPoint">Die Koordinate, von der aus der Weg berechnet werden soll.</param>
+   /// <param name="targetLocations">Eine Auflistung von Koordinaten, zu denen der schnellste Weg berechnet werden soll</param>
+   /// <param name="ignore">Eine Auflistung von Koordinaten, die nicht Teil des Wegs sein dürfen.
+   /// Wenn dieser Parameter null ist, gibt es keine Restriktionen.</param>
+   /// <returns>Gibt eine Liste von Koordinaten zurück, die den Weg beschreiben. Startet vom Kopf der Schlange
+   /// und führt bis zur nächsten Koordinate in targetLocations.
+   /// Wenn es keinen gültigen Weg gibt, wird eine leere Liste zurückgegeben</returns>
    public static List<Vector2Int> FindNearestPathFromPointToPoint(GameState gameState, Vector2Int startPoint, IEnumerable<Vector2Int> targetLocations, IEnumerable<Vector2Int> ignore = null) {
       if (ignore == null)
          ignore = new Vector2Int[] { };
@@ -111,6 +154,7 @@ public static class BotUtilities {
             }
             if (gameState.IsTileSafe(next) && !closed.Contains(next)) {
                if (ignore.Contains(next)) {
+                  //remove pls
                   Debug.Log("illegal");
                }
                else {

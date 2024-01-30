@@ -173,6 +173,9 @@ public class GameDisplay : MonoBehaviour {
          GraphPanel.SetActive(GraphEnableCheckbox.isOn && Simulator.SimulationEnded == 0f && Simulator.SimulationStarted > 0f);
    }
 
+   /// <summary>
+   /// Rückt das Replay um einen Schritt vor
+   /// </summary>
    public void SingleTickAdvance() {
       if (Game != null && currentMemoryIndex < Game.Memory.Count) {
          advanceSingleTick = true;
@@ -180,6 +183,9 @@ public class GameDisplay : MonoBehaviour {
       }
    }
 
+   /// <summary>
+   /// Rückt das Replay um einen Schritt zurück
+   /// </summary>
    public void SingleTickBack() {
       if (Game != null && currentMemoryIndex > 0) {
          currentMemoryIndex -= 2;
@@ -188,6 +194,13 @@ public class GameDisplay : MonoBehaviour {
       }
    }
 
+   /// <summary>
+   /// Fügt den Graphen einen weiteren Datenpunkt hinzu
+   /// </summary>
+   /// <param name="bot1Wins">Anzahl der Siege des ersten Bots</param>
+   /// <param name="bot2Wins">Anzahl der Siege des zweiten Bots</param>
+   /// <param name="draws">Anzahl der Spiele, die unentschieden geendet sind</param>
+   /// <param name="total">Anzahl aller Spiele</param>
    private void drawGraph(int bot1Wins, int bot2Wins, int draws, int total) {
       if (Simulator.GamesToSimulate == 0 || total == 0)
          return;
@@ -196,6 +209,9 @@ public class GameDisplay : MonoBehaviour {
       DrawGraph.AddDataPoint(draws / (float)total);
    }
 
+   /// <summary>
+   /// Sammelt Informationen und stellt sie im Status-Label dar
+   /// </summary>
    private void aggregateAndDisplayStatus() {
       int gamesFinished = 0;
       int snake1Win = 0;
@@ -218,14 +234,6 @@ public class GameDisplay : MonoBehaviour {
       float simTime = Simulator.SimulationEnded - Simulator.SimulationStarted;
       if (simTime < 0f)
          simTime = Time.time - Simulator.SimulationStarted;
-      statusSB.AppendLine("<b>Input Guide</b>");
-      statusSB.AppendLine("F1: next game");
-      statusSB.AppendLine("F2: next game where Snake_1 won");
-      statusSB.AppendLine("F3: next game where Snake_2 won");
-      statusSB.AppendLine("F4: next game that ended in a draw");
-      statusSB.AppendLine("F5: next game that ended by tick limit");
-      statusSB.AppendLine("F6: replay current game");
-      statusSB.AppendLine();
       if (Simulator.Games.Count > 0) {
          statusSB.AppendLine("<b>Simulation Stats</b>");
          statusSB.AppendFormat("Simulating {0} Games\n", Simulator.GamesToSimulate);
@@ -263,12 +271,18 @@ public class GameDisplay : MonoBehaviour {
       }
    }
 
+   /// <summary>
+   /// Speichert die ausgewählten Werte, die in den Bot-Auswahl-Dropdown Menüs stehen
+   /// </summary>
    private void SaveDropdownState() {
       string text = SnakeBotSelects[0].options[SnakeBotSelects[0].value].text + "\n" + SnakeBotSelects[1].options[SnakeBotSelects[1].value].text;
 
       System.IO.File.WriteAllText("UserSettings\\botselect.txt", text);
    }
 
+   /// <summary>
+   /// Stellt das Replay auf das nächste Spiel in der Reihenfolge ein
+   /// </summary>
    public void ShowNextGame() {
       Game = Simulator.Games.ToArray()[++currentGameIndex];
       lastTick = 0f;
@@ -276,6 +290,9 @@ public class GameDisplay : MonoBehaviour {
       Paused = false;
    }
 
+   /// <summary>
+   /// Stellt das Replay auf das nächste Spiel in der Reihenfolge ein, in dem der erste Bot gewonnen hat
+   /// </summary>
    public void ShowNextGame_WinnerSnake_1() {
       GameLogic[] games = Simulator.Games.ToArray();
       for (int i = currentGameIndex + 1; i < Simulator.Games.Count; i++) {
@@ -290,6 +307,9 @@ public class GameDisplay : MonoBehaviour {
       }
    }
 
+   /// <summary>
+   /// Stellt das Replay auf das nächste Spiel in der Reihenfolge ein, in dem der zweite Bot gewonnen hat
+   /// </summary>
    public void ShowNextGame_WinnerSnake_2() {
       GameLogic[] games = Simulator.Games.ToArray();
       for (int i = currentGameIndex + 1; i < games.Length; i++) {
@@ -304,6 +324,9 @@ public class GameDisplay : MonoBehaviour {
       }
    }
 
+   /// <summary>
+   /// Stellt das Replay auf das nächste Spiel in der Reihenfolge ein, das in unentschieden geendet hat
+   /// </summary>
    public void ShowNextGame_Draw() {
       GameLogic[] games = Simulator.Games.ToArray();
       for (int i = currentGameIndex + 1; i < Simulator.Games.Count; i++) {
@@ -318,6 +341,9 @@ public class GameDisplay : MonoBehaviour {
       }
    }
 
+   /// <summary>
+   /// Stellt das Replay auf das nächste Spiel in der Reihenfolge ein, das geendet hat, weil das Tick-Limit erreicht wurde
+   /// </summary>
    public void ShowNextGame_TickLimit() {
       GameLogic[] games = Simulator.Games.ToArray();
       for (int i = currentGameIndex + 1; i < Simulator.Games.Count; i++) {
@@ -332,6 +358,9 @@ public class GameDisplay : MonoBehaviour {
       }
    }
 
+   /// <summary>
+   /// Startet das derzeitige Replay von vorn
+   /// </summary>
    public void ReplayCurrentGame() {
       GameLogic[] games = Simulator.Games.ToArray();
       if (currentGameIndex >= 0) {
